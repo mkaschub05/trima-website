@@ -18,6 +18,7 @@ All pages are generated from one template: edit the texts in `tools/build.py`, t
 | `assets/css/intro.css`, `assets/js/intro.js` | Scroll intro on both home pages: engraving drawn on load, bronze cast on scroll; line art from `tools/lineart.swift` |
 | `assets/js/site.js` | Motion: word reveal, scroll reveal, light on the Justitia bronze (pointer/scroll), card light, header; off with reduced motion |
 | `CNAME` | Custom domain for GitHub Pages |
+| `e98e5907139ff1ee53361ff7d231cf2a.txt` | IndexNow key (Bing/Yandex), keep it |
 
 ## Local preview
 
