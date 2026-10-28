@@ -15,7 +15,13 @@
   var cssDriven = window.CSS && CSS.supports("animation-timeline: --a");
   // Touch devices: stepped instead of scrubbed (see intro.css); JS never touches --p there.
   var touch = window.matchMedia("(hover: none)").matches;
-  var STEPS = [0.02, 0.22, 0.36, 0.5, 0.9];   // p at which s1 … s5 switch on
+  var STEPS = [0.05, 0.22, 0.36, 0.5, 0.9];   // p at which s1 … s5 switch on
+  // Steps only start after the visitor has really scrolled (finger, wheel, keys) – never from shifts while the
+  // page loads (address bar, restored position). Below 60 px nothing happens either.
+  var userScrolled = false;
+  ["touchmove", "wheel", "keydown"].forEach(function (type) {
+    window.addEventListener(type, function () { userScrolled = true; }, { passive: true, once: true });
+  });
   var ticking = false;
   function update() {
     var vh = window.innerHeight;
@@ -26,7 +32,7 @@
       if (!cssDriven && !touch) s.style.setProperty("--p", p.toFixed(4));
       if (touch) {
         var step = 0;
-        while (step < STEPS.length && p >= STEPS[step]) step++;
+        if (userScrolled && window.scrollY > 60) while (step < STEPS.length && p >= STEPS[step]) step++;
         if (s._step !== step) {
           for (var i = 1; i <= STEPS.length; i++) s.classList.toggle("s" + i, i <= step);
           s._step = step;
