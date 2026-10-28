@@ -27,11 +27,23 @@ T = {
                   ("Contact", '<a href="mailto:contact@trima.ae">contact@trima.ae</a>')],
         "companies_eyebrow": "The group", "companies_h2": "Our companies",
         "companies_intro": "Three companies under one roof, each with its own focus.",
+        # VIRENTIO is shown as the wide lead card. Never mention AI/automation for the editing itself
+        # (decision D-129); AI videos are an openly labelled service line of their own (D-135).
+        "virentio": {
+            "url": "https://virentio.app/en",
+            "lead": "VIRENTIO turns streams, podcasts and videos into content that reaches people – for creators, "
+                    "agencies and companies, with a personal contact person from the first clip on.",
+            "services_title": "What we do",
+            "services": ["Clips for TikTok, Instagram Reels and YouTube Shorts",
+                         "Long-form edits and complete podcast packages",
+                         "Thumbnails and titles",
+                         "Publishing across several accounts, with clear reporting",
+                         "Translation and dubbing",
+                         "AI videos and animations"],
+            "button": "Visit virentio.app",
+        },
         "companies": [
-            ("virentio", "VIRENTIO", "Content &amp; distribution",
-             "Video editing for social media: streams, podcasts and videos cut into Reels, TikToks and Shorts "
-             "– for creators and companies.",
-             '<a href="https://virentio.app/" rel="noopener">virentio.app</a>', 49),
+            ("virentio", "VIRENTIO", "Social media agency", "", "", 49),
             ("locentio", "LOCENTIO", "Data &amp; technology",
              "LOCENTIO develops data-driven software. More details will follow at launch.",
              "In development", 58),
@@ -74,11 +86,21 @@ T = {
                   ("Kontakt", '<a href="mailto:contact@trima.ae">contact@trima.ae</a>')],
         "companies_eyebrow": "Die Gruppe", "companies_h2": "Unsere Firmen",
         "companies_intro": "Drei Firmen unter einem Dach, jede mit eigenem Schwerpunkt.",
+        "virentio": {
+            "url": "https://virentio.app/",
+            "lead": "VIRENTIO macht aus Streams, Podcasts und Videos Inhalte, die ankommen – für Creator, Agenturen "
+                    "und Unternehmen, mit fester Ansprechperson vom ersten Clip an.",
+            "services_title": "Was wir machen",
+            "services": ["Clips für TikTok, Instagram Reels und YouTube Shorts",
+                         "Langvideo-Schnitt und Podcast-Komplettpakete",
+                         "Thumbnails und Titel",
+                         "Veröffentlichung über mehrere Accounts, mit klarem Reporting",
+                         "Übersetzung und Synchronisation",
+                         "KI-Videos und Animationen"],
+            "button": "Zu virentio.app",
+        },
         "companies": [
-            ("virentio", "VIRENTIO", "Content &amp; Verbreitung",
-             "Videoschnitt für Social Media: Streams, Podcasts und Videos werden zu Reels, TikToks und Shorts "
-             "– für Creator und Firmen.",
-             '<a href="https://virentio.app/" rel="noopener">virentio.app</a>', 49),
+            ("virentio", "VIRENTIO", "Social-Media-Agentur", "", "", 49),
             ("locentio", "LOCENTIO", "Daten &amp; Technologie",
              "LOCENTIO entwickelt datengestützte Software. Mehr dazu zum Start.",
              "In Entwicklung", 58),
@@ -162,7 +184,7 @@ def header(t, on_home=True):
 def footer(t, lang):
     items = []
     for key, name, *_ in t["companies"]:
-        items.append(f'<li><a href="https://virentio.app/" rel="noopener">{name}</a></li>' if key == "virentio"
+        items.append(f'<li><a href="{t["virentio"]["url"]}" rel="noopener">{name}</a></li>' if key == "virentio"
                      else f"<li>{name}</li>")
     return f"""
   <footer class="site-footer">
@@ -201,6 +223,23 @@ def home(lang):
     facts = "\n".join(f'      <div class="fact"><dt>{k}</dt><dd>{v}</dd></div>' for k, v in t["facts"])
     cards = []
     for i, (key, name, field, desc, status, h) in enumerate(t["companies"], 1):
+        if key == "virentio":
+            v = t["virentio"]
+            items = "".join(f"<li>{x}</li>" for x in v["services"])
+            cards.append(f"""          <article class="company virentio featured">
+            <div class="featured-main">
+              <div class="top"><img src="/assets/img/virentio.png" alt="" width="52" height="{round(52 * h / 56)}"><span class="num">0{i}</span></div>
+              <h3>{name}</h3>
+              <p class="field">{field}</p>
+              <p class="desc">{v['lead']}</p>
+              <a class="btn btn-accent" href="{v['url']}" rel="noopener">{v['button']} <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="featured-services">
+              <p class="services-title">{v['services_title']}</p>
+              <ul class="services">{items}</ul>
+            </div>
+          </article>""")
+            continue
         cards.append(f"""          <article class="company {key}">
             <div class="top"><img src="/assets/img/{key}.png" alt="" width="44" height="{round(44 * h / 56)}"><span class="num">0{i}</span></div>
             <h3>{name}</h3>

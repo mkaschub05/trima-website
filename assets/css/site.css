@@ -111,7 +111,7 @@ section + section { border-top: 1px solid var(--line); }
 .section-head h2 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; margin: 0; }
 .section-head p { color: var(--muted); max-width: 420px; margin: 0; }
 
-.companies { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.companies { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 .company {
   background: var(--bg-raised);
   border: 1px solid var(--line);
@@ -135,6 +135,34 @@ section + section { border-top: 1px solid var(--line); }
 .company .status a { color: var(--text); text-decoration: none; }
 .company .status a:hover { color: var(--accent); }
 .company.virentio { --accent: var(--virentio); }
+
+/* VIRENTIO lead card: full width, text left, services right. */
+.company.featured {
+  grid-column: 1 / -1;
+  display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px;
+  padding: 44px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(139, 92, 255, .10), transparent 55%),
+    var(--bg-raised);
+}
+.company.featured .top { align-self: stretch; }
+.company.featured .top img { width: 52px; }
+.company.featured h3 { font-size: 28px; }
+.company.featured p.desc { font-size: 18px; color: var(--text); opacity: .86; max-width: 520px; }
+.featured-main { display: flex; flex-direction: column; align-items: flex-start; }
+.btn-accent { border-color: var(--accent); color: var(--text); gap: 8px; margin-top: auto; }
+.btn-accent:hover { background: var(--accent); color: #fff; }
+.featured-services { border-left: 1px solid var(--line); padding-left: 48px; }
+.services-title { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); margin: 4px 0 18px; font-weight: 600; }
+.services { list-style: none; margin: 0; padding: 0; }
+.services li {
+  position: relative; padding: 13px 0 13px 26px; border-bottom: 1px solid var(--line);
+  color: var(--text); font-size: 16px;
+}
+.services li:last-child { border-bottom: 0; }
+.services li::before {
+  content: ""; position: absolute; left: 0; top: 50%; width: 10px; height: 2px; background: var(--accent);
+}
 .company.locentio { --accent: var(--locentio); }
 .company.exemptio { --accent: var(--exemptio); }
 
@@ -172,6 +200,9 @@ section + section { border-top: 1px solid var(--line); }
 @media (max-width: 960px) {
   .companies { grid-template-columns: 1fr; }
   .contact-panel { grid-template-columns: 1fr; padding: 40px; }
+  .company.featured { grid-template-columns: 1fr; gap: 32px; padding: 36px; }
+  .featured-services { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 24px; }
+  .btn-accent { margin-top: 8px; }
   .contact-panel .mail-box { justify-self: start; text-align: left; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .footer-grid > div:first-child { grid-column: 1 / -1; }
@@ -192,6 +223,6 @@ section + section { border-top: 1px solid var(--line); }
   .fact, .fact + .fact { padding: 18px 0; border-left: 0; }
   .fact + .fact { border-top: 1px solid var(--line); }
   section { padding: 72px 0; }
-  .company { padding: 26px; }
+  .company, .company.featured { padding: 26px; }
   .contact-panel { padding: 28px; }
 }
