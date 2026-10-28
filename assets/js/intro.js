@@ -9,6 +9,9 @@
     scenes.forEach(function (s) { s.classList.add("static"); s.style.setProperty("--p", 1); });
     return;
   }
+  // With CSS scroll-driven animations the browser moves everything itself (see intro.css); then JS only
+  // hides the header while the scene runs and does not touch --p.
+  var cssDriven = window.CSS && CSS.supports("animation-timeline: --a");
   var ticking = false;
   function update() {
     var vh = window.innerHeight;
@@ -16,8 +19,7 @@
       var r = s.getBoundingClientRect();
       var total = s.offsetHeight - vh;
       var p = total > 0 ? Math.min(Math.max(-r.top / total, 0), 1) : 0;
-      s.style.setProperty("--p", p.toFixed(4));
-      s.classList.toggle("started", p > 0.01);
+      if (!cssDriven) s.style.setProperty("--p", p.toFixed(4));
       if (s === scenes[0]) document.documentElement.classList.toggle("in-intro", p < 0.9);
     });
     ticking = false;

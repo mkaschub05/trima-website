@@ -123,3 +123,66 @@ main > .scene:first-child { margin-top: -72px; }
   .intro .cast { -webkit-mask-image: none; mask-image: none; }
   .intro .figure { opacity: 1; transform: none; }
 }
+
+/* ---------------------------------------------------------------------------------------------------------------
+   Scroll-driven version (Safari 26+, Chrome, Edge): the browser ties every movement directly to the scroll position
+   on the compositor – no JavaScript per frame, so nothing lags behind the finger on phones. Only transform and opacity
+   are animated. The keyframes reproduce the --p formulas above; intro.js leaves --p alone when this is supported.
+   "contain 0%" = scene top at the top of the screen, "contain 100%" = scene bottom at the bottom = p 0 … 1.
+   --------------------------------------------------------------------------------------------------------------- */
+@supports (animation-timeline: --a) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scene { view-timeline: --intro block; }
+    .intro .figure, .intro .cast-track, .intro .cast-in, .intro .molten, .intro .glow,
+    .intro .wordmark, .scroll-hint, .line {
+      animation-timing-function: linear; animation-fill-mode: both; animation-duration: auto;
+      animation-timeline: --intro;
+    }
+    .intro .figure { animation-name: sd-figure; animation-range: contain 0% contain 100%; }
+    .intro .cast-track { animation-name: sd-track; animation-range: contain 4% contain 42.5%; }
+    .intro .cast-in { animation-name: sd-in; animation-range: contain 4% contain 42.5%; }
+    .intro .molten { animation-name: sd-molten; animation-range: contain 4% contain 42.5%; }
+    .intro .glow { animation-name: sd-glow; animation-range: contain 0% contain 100%; }
+    .intro .wordmark { animation-name: sd-out; animation-range: contain 1.5% contain 10%; }
+    .scroll-hint { animation-name: sd-out; animation-range: contain 0% contain 4%; }
+    .line { animation-name: sd-line; }
+    .line:nth-child(1) { animation-range: contain 26% contain 86%; }
+    .line:nth-child(2) { animation-range: contain 40% contain 86%; }
+    .line:nth-child(3) { animation-range: contain 54% contain 86%; }
+    /* The sketch keeps its time-based drawing on load and gets the scroll fade as a second animation. */
+    .intro .sketch, .intro-on .intro .sketch {
+      animation: draw 2.6s cubic-bezier(.45, 0, .2, 1) .2s both, sd-sketch linear both;
+      animation-timeline: auto, --intro; animation-range: normal, contain 4% contain 42.5%;
+    }
+
+    @keyframes sd-figure {
+      0%, 10% { transform: translate(0, -6vh) scale(1); opacity: 1; }
+      30%, 88% { transform: translate(21vw, 0) scale(1.06); opacity: 1; }
+      100% { transform: translate(21vw, 0) scale(.98); opacity: 0; }
+    }
+    @keyframes sd-track { from { transform: translate3d(0, 100%, 0); } to { transform: translate3d(0, 0, 0); } }
+    @keyframes sd-in { from { transform: translate3d(0, -100%, 0); } to { transform: translate3d(0, 0, 0); } }
+    @keyframes sd-molten { 0% { opacity: 0; } 8%, 92% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes sd-glow {
+      0% { transform: translate3d(48%, -6%, 0); opacity: 0; }
+      42% { opacity: 1; }
+      100% { transform: translate3d(18%, 104%, 0); opacity: 1; }
+    }
+    @keyframes sd-sketch { from { opacity: .9; } to { opacity: .4; } }
+    @keyframes sd-out { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes sd-line {
+      0% { opacity: 0; transform: translateY(28px); }
+      20%, 80% { opacity: 1; transform: none; }
+      100% { opacity: 0; transform: none; }
+    }
+
+    @media (max-width: 760px) {
+      .intro .figure { animation-name: sd-figure-sm; }
+      @keyframes sd-figure-sm {
+        0%, 10% { transform: translateY(-8vh) scale(1); opacity: 1; }
+        30%, 88% { transform: translateY(-18vh) scale(1); opacity: 1; }
+        100% { transform: translateY(-18vh) scale(.92); opacity: 0; }
+      }
+    }
+  }
+}
