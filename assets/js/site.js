@@ -40,13 +40,37 @@
 
   // Header gets a firmer background once the page scrolls.
   var header = document.querySelector(".site-header");
+  var hero = document.querySelector(".hero");
   var art = document.querySelector(".hero-art .frame");
   var ticking = false;
+  var pointerOnArt = false;
+  function wide() { return window.innerWidth > 960; }
+  function setLight(x, y) {
+    art.style.setProperty("--lx", x.toFixed(1) + "%");
+    art.style.setProperty("--ly", y.toFixed(1) + "%");
+  }
   function onScroll() {
     var y = window.scrollY;
     if (header) header.classList.toggle("scrolled", y > 8);
-    if (art && !reduce && window.innerWidth > 960) art.style.transform = "translateY(" + (y * 0.06).toFixed(1) + "px)";
+    if (art && !reduce) {
+      art.style.transform = "translateY(" + (y * (wide() ? 0.06 : 0.12)).toFixed(1) + "px)";
+      if (wide() && !pointerOnArt && hero) {
+        // Scrolling down the hero moves the light from the head down over the robe.
+        var p = Math.min(Math.max(y / hero.offsetHeight, 0), 1);
+        setLight(58 - p * 18, 22 + p * 60);
+      }
+    }
     ticking = false;
+  }
+  if (art && !reduce) {
+    var heroArt = art.parentNode;
+    heroArt.addEventListener("pointermove", function (e) {
+      if (!wide()) return;
+      pointerOnArt = true;
+      var r = art.getBoundingClientRect();
+      setLight((e.clientX - r.left) / r.width * 100, (e.clientY - r.top) / r.height * 100);
+    });
+    heroArt.addEventListener("pointerleave", function () { pointerOnArt = false; onScroll(); });
   }
   window.addEventListener("scroll", function () {
     if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }

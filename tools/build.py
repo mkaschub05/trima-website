@@ -272,7 +272,7 @@ def home(lang):
               <source srcset="/assets/img/justitia.webp" type="image/webp">
               <img src="/assets/img/justitia.jpg" alt="{t['art_alt']}" width="800" height="778">
             </picture>
-            <span class="sheen" aria-hidden="true"></span>
+            <span class="light" aria-hidden="true"></span>
           </div>
         </figure>
       </div>
