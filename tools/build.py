@@ -22,9 +22,6 @@ T = {
         "lead": "Trima brings VIRENTIO, LOCENTIO and EXEMPTIO together under one roof. "
                 "The company is currently being established in the IFZA free zone, Dubai.",
         "cta_contact": "Get in touch", "cta_companies": "Our companies",
-        "facts": [("Group", "Three companies"),
-                  ("Seat", "Dubai, IFZA free zone – in formation"),
-                  ("Contact", '<a href="mailto:contact@trima.ae">contact@trima.ae</a>')],
         "companies_eyebrow": "The group", "companies_h2": "Our companies",
         "companies_intro": "Three companies under one roof, each with its own focus.",
         # VIRENTIO is shown as the wide lead card. Never mention AI/automation for the editing itself
@@ -82,9 +79,6 @@ T = {
         "lead": "Unter Trima sind VIRENTIO, LOCENTIO und EXEMPTIO gebündelt. "
                 "Die Gesellschaft wird derzeit in der Freihandelszone IFZA in Dubai gegründet.",
         "cta_contact": "Kontakt aufnehmen", "cta_companies": "Unsere Firmen",
-        "facts": [("Gruppe", "Drei Firmen"),
-                  ("Sitz", "Dubai, Freihandelszone IFZA – in Gründung"),
-                  ("Kontakt", '<a href="mailto:contact@trima.ae">contact@trima.ae</a>')],
         "companies_eyebrow": "Die Gruppe", "companies_h2": "Unsere Firmen",
         "companies_intro": "Drei Firmen unter einem Dach, jede mit eigenem Schwerpunkt.",
         "virentio": {
@@ -226,7 +220,8 @@ def footer(t, lang):
 
 def home(lang, intro="", extra_head="", index=True, canonical=None):
     t = T[lang]
-    facts = "\n".join(f'      <div class="fact"><dt>{k}</dt><dd>{v}</dd></div>' for k, v in t["facts"])
+    names = '<span class="sep" aria-hidden="true"></span>'.join(
+        f'<a href="#{t["id_companies"]}">{name}</a>' for _, name, *_ in t["companies"])
     cards = []
     for i, (key, name, field, desc, status, h) in enumerate(t["companies"], 1):
         if key == "virentio":
@@ -253,7 +248,10 @@ def home(lang, intro="", extra_head="", index=True, canonical=None):
             <p class="desc">{desc}</p>
             <p class="status">{status}</p>
           </article>""")
-    return head(t, lang, "Trima", canonical or t["home"], t["description"], index=index, extra=extra_head) + header(t) + f"""
+    org = ('\n  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", '
+           '"name": "Trima", "url": "https://trima.ae/", "logo": "https://trima.ae/assets/img/trima-logo.jpg", '
+           '"email": "contact@trima.ae", "description": "' + t["og_description"] + '"}</script>')
+    return head(t, lang, "Trima", canonical or t["home"], t["description"], index=index, extra=extra_head + org) + header(t) + f"""
   <main>{intro}
     <div class="hero">
       <div class="wrap hero-grid">
@@ -279,9 +277,7 @@ def home(lang, intro="", extra_head="", index=True, canonical=None):
     </div>
 
     <div class="wrap">
-      <dl class="facts" data-reveal>
-{facts}
-      </dl>
+      <nav class="names" data-reveal aria-label="{t['companies_h2']}">{names}</nav>
     </div>
 
     <section id="{t['id_companies']}">
