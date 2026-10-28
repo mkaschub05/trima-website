@@ -15,9 +15,13 @@
   <meta property="og:url" content="https://trima.ae/">
   <meta property="og:image" content="https://trima.ae/assets/img/trima-logo.jpg">
   <meta name="theme-color" content="#080605">
+  <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/img/favicon-48.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/css/site.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script src="/assets/js/site.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -36,19 +40,30 @@
 
   <main>
     <div class="hero">
-      <div class="wrap">
-        <p class="eyebrow">Trima · Dubai</p>
-        <h1>The parent company of a group of ventures in content, data and business software.</h1>
-        <p class="lead">Trima brings VIRENTIO, LOCENTIO and EXEMPTIO together under one roof. The company is currently being established in the IFZA free zone, Dubai.</p>
-        <div class="actions">
-          <a class="btn btn-primary" href="#contact">Get in touch</a>
-          <a class="btn btn-secondary" href="#companies">Our companies</a>
+      <div class="wrap hero-grid">
+        <div class="hero-text">
+          <p class="eyebrow" data-reveal><span class="rule"></span>Trima · Dubai</p>
+          <h1 data-words>The parent company of a group of ventures in content, data and business software.</h1>
+          <p class="lead" data-reveal style="--d: .5s">Trima brings VIRENTIO, LOCENTIO and EXEMPTIO together under one roof. The company is currently being established in the IFZA free zone, Dubai.</p>
+          <div class="actions" data-reveal style="--d: .65s">
+            <a class="btn btn-primary" href="#contact">Get in touch</a>
+            <a class="btn btn-secondary" href="#companies">Our companies</a>
+          </div>
         </div>
+        <figure class="hero-art" data-reveal style="--d: .2s">
+          <div class="frame">
+            <picture>
+              <source srcset="/assets/img/justitia.webp" type="image/webp">
+              <img src="/assets/img/justitia.jpg" alt="Justitia with scales – the Trima emblem" width="800" height="778">
+            </picture>
+            <span class="sheen" aria-hidden="true"></span>
+          </div>
+        </figure>
       </div>
     </div>
 
     <div class="wrap">
-      <dl class="facts">
+      <dl class="facts" data-reveal>
       <div class="fact"><dt>Group</dt><dd>Three companies</dd></div>
       <div class="fact"><dt>Seat</dt><dd>Dubai, IFZA free zone – in formation</dd></div>
       <div class="fact"><dt>Contact</dt><dd><a href="mailto:contact@trima.ae">contact@trima.ae</a></dd></div>
@@ -57,7 +72,7 @@
 
     <section id="companies">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <div>
             <p class="eyebrow">The group</p>
             <h2>Our companies</h2>
@@ -65,7 +80,7 @@
           <p>Three companies under one roof, each with its own focus.</p>
         </div>
         <div class="companies">
-          <article class="company virentio featured">
+          <article class="company virentio featured" data-reveal data-spot>
             <div class="featured-main">
               <div class="top"><img src="/assets/img/virentio.png" alt="" width="52" height="46"><span class="num">01</span></div>
               <h3>VIRENTIO</h3>
@@ -78,14 +93,14 @@
               <ul class="services"><li>Clips for TikTok, Instagram Reels and YouTube Shorts</li><li>Long-form edits and complete podcast packages</li><li>Thumbnails and titles</li><li>Publishing across several accounts, with clear reporting</li><li>Translation and dubbing</li><li>AI videos and animations</li></ul>
             </div>
           </article>
-          <article class="company locentio">
+          <article class="company locentio" data-reveal data-spot style="--d: 0.12s">
             <div class="top"><img src="/assets/img/locentio.png" alt="" width="44" height="46"><span class="num">02</span></div>
             <h3>LOCENTIO</h3>
             <p class="field">Data &amp; technology</p>
             <p class="desc">LOCENTIO develops data-driven software. More details will follow at launch.</p>
             <p class="status">In development</p>
           </article>
-          <article class="company exemptio">
+          <article class="company exemptio" data-reveal data-spot style="--d: 0.24s">
             <div class="top"><img src="/assets/img/exemptio.png" alt="" width="44" height="39"><span class="num">03</span></div>
             <h3>EXEMPTIO</h3>
             <p class="field">Finance &amp; tax for SMEs</p>
@@ -98,7 +113,7 @@
 
     <section id="contact">
       <div class="wrap">
-        <div class="contact-panel">
+        <div class="contact-panel" data-reveal data-spot>
           <div>
             <p class="eyebrow">Contact</p>
             <h2>Get in touch</h2>
@@ -115,7 +130,7 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <div class="footer-grid">
+      <div class="footer-grid" data-reveal>
         <div>
           <a class="brand" href="/" aria-label="Trima – home">
         <img class="emblem" src="/assets/img/trima-emblem.webp" alt="" width="44" height="44">

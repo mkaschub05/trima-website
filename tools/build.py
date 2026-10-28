@@ -67,6 +67,7 @@ T = {
       <h2>This website</h2>
       <p>This website does not use cookies, analytics or any third-party resources.</p>""",
         "logo_alt": "Trima",
+        "art_alt": "Justitia with scales – the Trima emblem",
     },
     "de": {
         "home": "/de/", "legal": "/de/impressum/", "other_lang": "en", "other_home": "/", "other_label": "EN",
@@ -124,6 +125,7 @@ T = {
       <h2>Diese Website</h2>
       <p>Diese Website verwendet keine Cookies, keine Analyse-Werkzeuge und keine Inhalte von Drittanbietern.</p>""",
         "logo_alt": "Trima",
+        "art_alt": "Justitia mit Waage – das Trima-Zeichen",
     },
 }
 
@@ -151,9 +153,13 @@ def head(t, lang, title, canonical, description=None, index=True):
   <title>{title}</title>{desc}{robots}
   <link rel="canonical" href="https://trima.ae{canonical}">{alt}
   <meta name="theme-color" content="#080605">
+  <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/img/favicon-48.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/css/site.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script src="/assets/js/site.js" defer></script>
 </head>
 <body>"""
 
@@ -189,7 +195,7 @@ def footer(t, lang):
     return f"""
   <footer class="site-footer">
     <div class="wrap">
-      <div class="footer-grid">
+      <div class="footer-grid" data-reveal>
         <div>
           {brand(t)}
           <p>{t['footer_about']}</p>
@@ -226,7 +232,7 @@ def home(lang):
         if key == "virentio":
             v = t["virentio"]
             items = "".join(f"<li>{x}</li>" for x in v["services"])
-            cards.append(f"""          <article class="company virentio featured">
+            cards.append(f"""          <article class="company virentio featured" data-reveal data-spot>
             <div class="featured-main">
               <div class="top"><img src="/assets/img/virentio.png" alt="" width="52" height="{round(52 * h / 56)}"><span class="num">0{i}</span></div>
               <h3>{name}</h3>
@@ -240,7 +246,7 @@ def home(lang):
             </div>
           </article>""")
             continue
-        cards.append(f"""          <article class="company {key}">
+        cards.append(f"""          <article class="company {key}" data-reveal data-spot style="--d: {(i - 1) * .12:.2f}s">
             <div class="top"><img src="/assets/img/{key}.png" alt="" width="44" height="{round(44 * h / 56)}"><span class="num">0{i}</span></div>
             <h3>{name}</h3>
             <p class="field">{field}</p>
@@ -250,26 +256,37 @@ def home(lang):
     return head(t, lang, "Trima", t["home"], t["description"]) + header(t) + f"""
   <main>
     <div class="hero">
-      <div class="wrap">
-        <p class="eyebrow">{t['eyebrow']}</p>
-        <h1>{t['h1']}</h1>
-        <p class="lead">{t['lead']}</p>
-        <div class="actions">
-          <a class="btn btn-primary" href="#{t['id_contact']}">{t['cta_contact']}</a>
-          <a class="btn btn-secondary" href="#{t['id_companies']}">{t['cta_companies']}</a>
+      <div class="wrap hero-grid">
+        <div class="hero-text">
+          <p class="eyebrow" data-reveal><span class="rule"></span>{t['eyebrow']}</p>
+          <h1 data-words>{t['h1']}</h1>
+          <p class="lead" data-reveal style="--d: .5s">{t['lead']}</p>
+          <div class="actions" data-reveal style="--d: .65s">
+            <a class="btn btn-primary" href="#{t['id_contact']}">{t['cta_contact']}</a>
+            <a class="btn btn-secondary" href="#{t['id_companies']}">{t['cta_companies']}</a>
+          </div>
         </div>
+        <figure class="hero-art" data-reveal style="--d: .2s">
+          <div class="frame">
+            <picture>
+              <source srcset="/assets/img/justitia.webp" type="image/webp">
+              <img src="/assets/img/justitia.jpg" alt="{t['art_alt']}" width="800" height="778">
+            </picture>
+            <span class="sheen" aria-hidden="true"></span>
+          </div>
+        </figure>
       </div>
     </div>
 
     <div class="wrap">
-      <dl class="facts">
+      <dl class="facts" data-reveal>
 {facts}
       </dl>
     </div>
 
     <section id="{t['id_companies']}">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <div>
             <p class="eyebrow">{t['companies_eyebrow']}</p>
             <h2>{t['companies_h2']}</h2>
@@ -284,7 +301,7 @@ def home(lang):
 
     <section id="{t['id_contact']}">
       <div class="wrap">
-        <div class="contact-panel">
+        <div class="contact-panel" data-reveal data-spot>
           <div>
             <p class="eyebrow">{t['contact_eyebrow']}</p>
             <h2>{t['contact_h2']}</h2>
