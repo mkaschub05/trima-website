@@ -130,7 +130,7 @@ T = {
 }
 
 
-def head(t, lang, title, canonical, description=None, index=True):
+def head(t, lang, title, canonical, description=None, index=True, extra=""):
     alt = ""
     if index:
         alt = """
@@ -159,7 +159,7 @@ def head(t, lang, title, canonical, description=None, index=True):
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/css/site.css">
   <script>document.documentElement.classList.add("js")</script>
-  <script src="/assets/js/site.js" defer></script>
+  <script src="/assets/js/site.js" defer></script>{extra}
 </head>
 <body>"""
 
@@ -224,7 +224,7 @@ def footer(t, lang):
 """
 
 
-def home(lang):
+def home(lang, intro="", extra_head="", index=True, canonical=None):
     t = T[lang]
     facts = "\n".join(f'      <div class="fact"><dt>{k}</dt><dd>{v}</dd></div>' for k, v in t["facts"])
     cards = []
@@ -253,8 +253,8 @@ def home(lang):
             <p class="desc">{desc}</p>
             <p class="status">{status}</p>
           </article>""")
-    return head(t, lang, "Trima", t["home"], t["description"]) + header(t) + f"""
-  <main>
+    return head(t, lang, "Trima", canonical or t["home"], t["description"], index=index, extra=extra_head) + header(t) + f"""
+  <main>{intro}
     <div class="hero">
       <div class="wrap hero-grid">
         <div class="hero-text">
@@ -329,6 +329,90 @@ def simple(lang, title, canonical, body):
 """ + footer(t, lang)
 
 
+# ---------- Intro previews (not linked, noindex) ----------
+LINES_DE = [("Eine Dachgesellschaft.", .16, .86), ("Drei Firmen.", .32, .86), ("<em>Echte Lösungen.</em>", .48, .86)]
+
+
+def lines_html():
+    return "\n".join(f'          <p class="line" style="--a: {a}; --b: {b}">{txt}</p>' for txt, a, b in LINES_DE)
+
+
+INTROS = {
+    "a": ("Bühne", "Justitia bildschirmfüllend, TRIMA wischt sich auf. Beim Scrollen dreht sie sich leicht, "
+                   "Licht wandert über die Bronze, drei Zeilen erscheinen, dann rückt sie nach rechts.", f"""
+    <section class="scene intro-a" data-scene aria-label="Intro">
+      <div class="stage">
+        <div class="figure">
+          <img src="/assets/img/justitia-hi.webp" alt="Justitia mit Waage – das Trima-Zeichen" width="1065" height="1035">
+          <span class="glow" aria-hidden="true"></span>
+        </div>
+        <img class="wordmark wordmark-wipe" src="/assets/img/trima-wordmark-hi.webp" alt="Trima" width="960" height="190">
+        <div class="lines">
+{lines_html()}
+        </div>
+        <div class="scroll-hint">Scrollen</div>
+      </div>
+    </section>"""),
+    "b": ("Medaille", "Justitia als Bronze-Münze. Beim Scrollen dreht sie sich um (Rückseite TRIMA) und fliegt "
+                      "am Ende nach oben links, wo das Logo sitzt.", """
+    <section class="scene intro-b" data-scene aria-label="Intro">
+      <div class="stage">
+        <div class="coin">
+""" + "\n".join(f'          <span class="rim" style="--z: {-z}px" aria-hidden="true"></span>' for z in range(1, 9)) + f"""
+          <div class="face front"><img src="/assets/img/justitia-coin.webp" alt="Justitia mit Waage – das Trima-Zeichen" width="720" height="720"></div>
+          <div class="face back" style="transform: rotateY(180deg) translateZ(9px)"><b>TRIMA</b><span>DUBAI</span></div>
+        </div>
+        <div class="lines">
+{lines_html()}
+        </div>
+        <div class="scroll-hint">Scrollen</div>
+      </div>
+    </section>"""),
+    "c": ("Schriftzug", "Ein riesiges TRIMA. Beim Scrollen gehen die Buchstaben auseinander und Justitia steigt "
+                        "dahinter auf, dann erscheinen die drei Zeilen.", """
+    <section class="scene intro-c" data-scene aria-label="Intro">
+      <div class="stage">
+        <div class="figure">
+          <img src="/assets/img/justitia-hi.webp" alt="Justitia mit Waage – das Trima-Zeichen" width="1065" height="1035">
+        </div>
+        <div class="letters" aria-label="Trima">""" + "".join(
+            f'<span class="ltr" style="--k: {i - 2}" aria-hidden="true"><span style="--i: {i}">{c}</span></span>'
+            for i, c in enumerate("TRIMA")) + f"""</div>
+        <div class="lines">
+{lines_html()}
+        </div>
+        <div class="scroll-hint">Scrollen</div>
+      </div>
+    </section>"""),
+}
+
+INTRO_HEAD = """
+  <link rel="stylesheet" href="/assets/css/intro.css">
+  <script src="/assets/js/intro.js" defer></script>"""
+
+
+def preview_index():
+    t = T["de"]
+    cards = "\n".join(f"""          <a class="company" href="/vorschau/{k}/" style="text-decoration: none; --accent: var(--bronze)">
+            <div class="top"><span class="num">{k.upper()}</span></div>
+            <h3>{name}</h3>
+            <p class="desc">{desc}</p>
+            <p class="status">Ansehen</p>
+          </a>""" for k, (name, desc, _) in INTROS.items())
+    body = f"""      <h1>Vorschau: Intro-Varianten</h1>
+      <p>Nicht verlinkt und nicht für Suchmaschinen. Jede Variante zeigt das Intro vor der bisherigen Startseite. Die echte Drehung der Figur (3D-Modell oder KI-Video) kommt später auf dem eigenen Server dazu – hier ist sie nur angedeutet.</p>
+      <div class="companies" style="grid-template-columns: 1fr; margin-top: 32px">
+{cards}
+          <a class="company" href="/de/" style="text-decoration: none; --accent: var(--bronze)">
+            <div class="top"><span class="num">LIVE</span></div>
+            <h3>Aktuelle Seite</h3>
+            <p class="desc">Zum Vergleich: die Startseite, wie sie jetzt online ist.</p>
+            <p class="status">Ansehen</p>
+          </a>
+      </div>"""
+    return simple("de", "Vorschau", "/vorschau/", body)
+
+
 NOT_FOUND = """      <h1>Page not found</h1>
       <p>This page does not exist. <a href="/">Back to trima.ae</a> · <a href="/de/" lang="de">Zur Startseite</a></p>"""
 
@@ -338,7 +422,11 @@ PAGES = {
     "legal/index.html": simple("en", T["en"]["legal_title"], "/legal/", T["en"]["legal_body"]),
     "de/impressum/index.html": simple("de", T["de"]["legal_title"], "/de/impressum/", T["de"]["legal_body"]),
     "404.html": simple("en", "Page not found", "/404.html", NOT_FOUND),
+    "vorschau/index.html": preview_index(),
 }
+for k, (_, _, html) in INTROS.items():
+    PAGES[f"vorschau/{k}/index.html"] = home("de", intro=html, extra_head=INTRO_HEAD, index=False,
+                                             canonical=f"/vorschau/{k}/")
 
 for rel, html in PAGES.items():
     path = ROOT / rel
