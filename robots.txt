@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: /vorschau/
 Sitemap: https://trima.ae/sitemap.xml

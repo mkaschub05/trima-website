@@ -14,7 +14,7 @@ All pages are generated from one template: edit the texts in `tools/build.py`, t
 | `assets/` | CSS and logos. Emblem, wordmark and icons are cut from Maddox's Justitia logo (Lanczos scaling + unsharp mask) |
 | `tools/build.py` | Page generator (EN + DE texts) |
 | `tools/sharpen.swift` | Crops/sharpens logo parts with macOS Core Image (`swiftc -O tools/sharpen.swift -o sharpen`) |
-| `assets/css/intro.css`, `assets/js/intro.js` | Scroll intro (preview `/vorschau/a/`): engraving drawn on load, bronze cast on scroll; line art from `tools/lineart.swift` |
+| `assets/css/intro.css`, `assets/js/intro.js` | Scroll intro on both home pages: engraving drawn on load, bronze cast on scroll; line art from `tools/lineart.swift` |
 | `assets/js/site.js` | Motion: word reveal, scroll reveal, light on the Justitia bronze (pointer/scroll), card light, header; off with reduced motion |
 | `CNAME` | Custom domain for GitHub Pages |
 

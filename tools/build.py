@@ -329,75 +329,52 @@ def simple(lang, title, canonical, body):
 """ + footer(t, lang)
 
 
-# ---------- Intro previews (not linked, noindex) ----------
-LINES_DE = [("Eine Dachgesellschaft.", .26, .86), ("Drei Firmen.", .4, .86), ("<em>Echte Lösungen.</em>", .54, .86)]
+# ---------- Scroll intro on the home pages: engraving drawn on load, bronze cast while scrolling ----------
+# Each line has a window (--a, --b) on the scene progress --p in which it is visible.
+INTRO_TEXT = {
+    "en": {"lines": [("One parent company.", .26, .86), ("Three companies.", .4, .86), ("<em>Real solutions.</em>", .54, .86)],
+           "hint": "Scroll"},
+    "de": {"lines": [("Eine Dachgesellschaft.", .26, .86), ("Drei Firmen.", .4, .86), ("<em>Echte Lösungen.</em>", .54, .86)],
+           "hint": "Scrollen"},
+}
 
 
-def lines_html():
-    return "\n".join(f'          <p class="line" style="--a: {a}; --b: {b}">{txt}</p>' for txt, a, b in LINES_DE)
-
-
-INTROS = {
-    "a": ("Bühne", "Justitia bildschirmfüllend: Sie zeichnet sich als feiner Bronze-Stich, TRIMA wischt sich auf. "
-                   "Beim Scrollen wird sie von unten nach oben in Bronze gegossen, Licht wandert, drei Zeilen erscheinen.", f"""
+def intro_html(lang):
+    t, x = T[lang], INTRO_TEXT[lang]
+    lines = "\n".join(f'          <p class="line" style="--a: {a}; --b: {b}">{txt}</p>' for txt, a, b in x["lines"])
+    return f"""
     <section class="scene intro" data-scene aria-label="Intro">
       <div class="stage">
         <div class="figure">
           <span class="sketch" aria-hidden="true"></span>
-          <div class="cast"><img src="/assets/img/justitia-hi.webp" alt="Justitia mit Waage – das Trima-Zeichen" width="1065" height="1035"></div>
+          <div class="cast"><img src="/assets/img/justitia-hi.webp" alt="{t['art_alt']}" width="1065" height="1035"></div>
           <span class="molten" aria-hidden="true"></span>
           <span class="glow" aria-hidden="true"></span>
         </div>
         <img class="wordmark" src="/assets/img/trima-wordmark-hi.webp" alt="Trima" width="960" height="190">
         <div class="lines">
-{lines_html()}
+{lines}
         </div>
-        <div class="scroll-hint">Scrollen</div>
+        <div class="scroll-hint">{x['hint']}</div>
       </div>
-    </section>"""),
-}
+    </section>"""
+
 
 INTRO_HEAD = """
   <link rel="stylesheet" href="/assets/css/intro.css">
   <script src="/assets/js/intro.js" defer></script>"""
 
 
-def preview_index():
-    t = T["de"]
-    cards = "\n".join(f"""          <a class="company" href="/vorschau/{k}/" style="text-decoration: none; --accent: var(--bronze)">
-            <div class="top"><span class="num">{k.upper()}</span></div>
-            <h3>{name}</h3>
-            <p class="desc">{desc}</p>
-            <p class="status">Ansehen</p>
-          </a>""" for k, (name, desc, _) in INTROS.items())
-    body = f"""      <h1>Vorschau: Intro-Varianten</h1>
-      <p>Nicht verlinkt und nicht für Suchmaschinen. Jede Variante zeigt das Intro vor der bisherigen Startseite. Die echte Drehung der Figur (3D-Modell oder KI-Video) kommt später auf dem eigenen Server dazu – hier ist sie nur angedeutet.</p>
-      <div class="companies" style="grid-template-columns: 1fr; margin-top: 32px">
-{cards}
-          <a class="company" href="/de/" style="text-decoration: none; --accent: var(--bronze)">
-            <div class="top"><span class="num">LIVE</span></div>
-            <h3>Aktuelle Seite</h3>
-            <p class="desc">Zum Vergleich: die Startseite, wie sie jetzt online ist.</p>
-            <p class="status">Ansehen</p>
-          </a>
-      </div>"""
-    return simple("de", "Vorschau", "/vorschau/", body)
-
-
 NOT_FOUND = """      <h1>Page not found</h1>
       <p>This page does not exist. <a href="/">Back to trima.ae</a> · <a href="/de/" lang="de">Zur Startseite</a></p>"""
 
 PAGES = {
-    "index.html": home("en"),
-    "de/index.html": home("de"),
+    "index.html": home("en", intro=intro_html("en"), extra_head=INTRO_HEAD),
+    "de/index.html": home("de", intro=intro_html("de"), extra_head=INTRO_HEAD),
     "legal/index.html": simple("en", T["en"]["legal_title"], "/legal/", T["en"]["legal_body"]),
     "de/impressum/index.html": simple("de", T["de"]["legal_title"], "/de/impressum/", T["de"]["legal_body"]),
     "404.html": simple("en", "Page not found", "/404.html", NOT_FOUND),
-    "vorschau/index.html": preview_index(),
 }
-for k, (_, _, html) in INTROS.items():
-    PAGES[f"vorschau/{k}/index.html"] = home("de", intro=html, extra_head=INTRO_HEAD, index=False,
-                                             canonical=f"/vorschau/{k}/")
 
 for rel, html in PAGES.items():
     path = ROOT / rel
