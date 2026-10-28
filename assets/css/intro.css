@@ -1,35 +1,32 @@
-/* Intro scenes (previews A/B/C). --p (0…1) comes from assets/js/intro.js. */
+/* Intro scene „Bühne“. --p (0…1) comes from assets/js/intro.js while the scene scrolls past. */
 .scene { position: relative; height: 340vh; background: var(--bg); --p: 0; padding: 0; border: 0; }
 /* The (hidden) sticky header still takes its height in the flow; pull the first scene up under it. */
 main > .scene:first-child { margin-top: -72px; }
 @media (max-width: 640px) { main > .scene:first-child { margin-top: -64px; } }
 .scene .stage {
   position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
-  display: grid; place-items: center; perspective: 1400px;
+  display: grid; place-items: center;
 }
-/* Ending phase 0…1 over the last 28 % of the scene. */
-.scene { --e: clamp(0, calc((var(--p) - .72) * 3.57), 1); }
 
-/* While the first scene runs, the header stays out of the way. */
+/* While the scene runs, the header stays out of the way. */
 .site-header { transition: opacity .5s, transform .5s, background .3s, box-shadow .3s; }
 .in-intro .site-header { opacity: 0; transform: translateY(-100%); pointer-events: none; }
 
 .scroll-hint {
-  position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);
+  position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%);
   display: grid; justify-items: center; gap: 10px;
   font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--faint);
   opacity: clamp(0, calc(1 - var(--p) * 25), 1);
 }
 .scroll-hint::after {
-  content: ""; width: 1px; height: 44px;
+  content: ""; width: 1px; height: 44px; transform-origin: top;
   background: linear-gradient(var(--bronze), transparent);
   animation: hint 2.2s ease-in-out infinite;
-  transform-origin: top;
 }
 @keyframes hint { 0% { transform: scaleY(0); opacity: 1; } 60% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
 
 /* Lines that appear one after another: each has its own window --a … --b. */
-.lines { position: absolute; z-index: 3; display: grid; gap: .1em; pointer-events: none; }
+.lines { position: absolute; z-index: 3; left: 7vw; top: 50%; transform: translateY(-50%); display: grid; gap: .1em; pointer-events: none; }
 .line {
   font-family: var(--serif); font-weight: 600; line-height: 1.05; color: var(--text);
   font-size: clamp(30px, 4.6vw, 68px);
@@ -40,140 +37,93 @@ main > .scene:first-child { margin-top: -72px; }
 }
 .line em { font-style: normal; color: var(--bronze); }
 
-/* Shared: wordmark wipe on load. */
-.wordmark-wipe { clip-path: inset(0 100% 0 0); }
-.intro-on .wordmark-wipe { clip-path: inset(0 0 0 0); transition: clip-path 1.8s cubic-bezier(.6, 0, .2, 1) .5s; }
+/* Wordmark wipes in on load and leaves on the first scroll. */
+.intro .wordmark {
+  position: absolute; z-index: 2; bottom: 7vh; width: min(460px, 70vw);
+  opacity: clamp(0, calc((.1 - var(--p)) * 12), 1);
+  clip-path: inset(0 100% 0 0);
+}
+.intro-on .intro .wordmark { clip-path: inset(0 0 0 0); transition: clip-path 1.8s cubic-bezier(.6, 0, .2, 1) 1.6s; }
 
-/* ---------- A: Bühne ---------- */
-.intro-a { --m: clamp(0, calc((var(--p) - .04) * 6), 1); --f: clamp(0, calc((var(--p) - .9) * 10), 1); }
-.intro-a .figure {
+/* ---- The figure: engraving first, then bronze is cast into it while scrolling ---- */
+.intro {
+  --c: clamp(0, calc((var(--p) - .04) * 2.6), 1);          /* casting 0…1 */
+  --m: clamp(0, calc((var(--p) - .1) * 5), 1);             /* moves aside for the lines */
+  --f: clamp(0, calc((var(--p) - .88) * 8.5), 1);          /* fades out at the end */
+}
+.intro .figure {
   position: relative; z-index: 1;
   height: min(64vh, 92vw); aspect-ratio: 1065 / 1035;
-  /* Starts centred above the wordmark, moves right to make room for the lines, then shrinks away. */
-  transform:
-    translate(calc(var(--m) * 17vw + var(--e) * 4vw), calc((1 - var(--m)) * -6vh))
-    scale(calc(1 + var(--m) * .12 - var(--e) * .5))
-    rotateY(calc((var(--p) - .1) * -22deg));
+  transform: translate(calc(var(--m) * 21vw), calc((1 - var(--m)) * -6vh)) scale(calc(1 + var(--m) * .06 - var(--f) * .08));
   opacity: calc(1 - var(--f));
-  --lx: calc(60% - var(--p) * 20%);
-  --ly: calc(18% + var(--p) * 64%);
+  --lx: calc(62% - var(--p) * 22%);
+  --ly: calc(16% + var(--p) * 66%);
 }
-.intro-a .figure img {
+.intro .figure > * { position: absolute; inset: 0; }
+
+/* 1. Engraving: bronze lines (the line-art image is only an alpha mask), drawn in diagonally on load. */
+.intro .sketch {
+  background: linear-gradient(170deg, #f6d8b6, #d29a6a 45%, #9a6238);
+  /* Line art × diagonal drawing sweep × soft edge (hides the frame the line filter finds at the border). */
+  -webkit-mask-image: url(/assets/img/justitia-lines.webp), linear-gradient(120deg, #000 42%, transparent 58%), radial-gradient(closest-side, #000 74%, transparent 96%);
+          mask-image: url(/assets/img/justitia-lines.webp), linear-gradient(120deg, #000 42%, transparent 58%), radial-gradient(closest-side, #000 74%, transparent 96%);
+  -webkit-mask-size: 100% 100%, 320% 100%, 100% 100%; mask-size: 100% 100%, 320% 100%, 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center, 100% 0, center; mask-position: center, 100% 0, center;
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+  opacity: calc(.9 - var(--c) * .5);
+}
+.intro-on .intro .sketch { animation: draw 2.6s cubic-bezier(.45, 0, .2, 1) .2s forwards; }
+@keyframes draw { to { -webkit-mask-position: center, 0 0, center; mask-position: center, 0 0, center; } }
+
+/* 2. Bronze cast: the real artwork, revealed from the bottom up as you scroll. */
+.intro .cast {
+  -webkit-mask-image: linear-gradient(to top, #000 calc(var(--c) * 112% - 10%), transparent calc(var(--c) * 112%));
+          mask-image: linear-gradient(to top, #000 calc(var(--c) * 112% - 10%), transparent calc(var(--c) * 112%));
+}
+.intro .cast img {
   width: 100%; height: 100%; object-fit: contain;
-  -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
-          mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
-  filter: brightness(0); transform: scale(1.08);
+  -webkit-mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
+          mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
 }
-.intro-on .intro-a .figure img { filter: brightness(1); transform: scale(1); transition: filter 2.4s ease .1s, transform 3s cubic-bezier(.2, .7, .2, 1); }
-.intro-a .figure .glow {
-  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: color-dodge;
-  background: radial-gradient(26% 24% at var(--lx) var(--ly), rgba(255, 214, 172, .38), transparent 72%);
-  -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
-          mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
-}
-.intro-a .wordmark {
-  position: absolute; z-index: 2; bottom: 7vh; width: min(460px, 70vw);
-  opacity: clamp(0, calc((.12 - var(--p)) * 10), 1);
-}
-.intro-a .lines { left: 7vw; top: 50%; transform: translateY(-50%); }
 
-/* ---------- B: Medaille ---------- */
-.intro-b .coin {
-  position: relative; z-index: 1; width: min(60vh, 76vw); aspect-ratio: 1;
-  transform-style: preserve-3d;
-  --turn: clamp(0, calc((var(--p) - .08) * 2.1), 1);
-  --m: clamp(0, calc((var(--p) - .04) * 6), 1);
-  transform:
-    translate(calc(var(--m) * -16vw + var(--e) * -22vw), calc(var(--e) * -40vh))
-    scale(calc(1 - var(--e) * .86))
-    rotateY(calc(var(--turn) * 180deg))
-    rotateX(calc(sin(var(--turn) * 3.1416) * 8deg));
-  opacity: 0; transition: opacity 1.6s ease .2s;
+/* 3. Molten edge: the lines glow brightly in a narrow band at the casting front. */
+.intro .molten {
+  background: linear-gradient(#fff4e0, #ffc27a);
+  -webkit-mask-image: url(/assets/img/justitia-lines.webp),
+    linear-gradient(to top, transparent calc(var(--c) * 112% - 14%), #000 calc(var(--c) * 112% - 6%), transparent calc(var(--c) * 112% + 2%)), radial-gradient(closest-side, #000 74%, transparent 96%);
+          mask-image: url(/assets/img/justitia-lines.webp),
+    linear-gradient(to top, transparent calc(var(--c) * 112% - 14%), #000 calc(var(--c) * 112% - 6%), transparent calc(var(--c) * 112% + 2%)), radial-gradient(closest-side, #000 74%, transparent 96%);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+  opacity: calc(min(var(--c) * 12, 1) * min((1 - var(--c)) * 12, 1));
+  filter: drop-shadow(0 0 6px rgba(255, 180, 100, .9));
 }
-.intro-on .intro-b .coin { opacity: calc(1 - clamp(0, calc((var(--p) - .93) * 14), 1)); }
-.intro-b .face {
-  position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
-  backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  box-shadow: 0 0 0 2px #2a1a10, 0 0 0 8px #a26b41, 0 0 0 9px #e2b48a, 0 0 0 12px #5a3720, 0 40px 120px -30px rgba(0, 0, 0, .95);
-}
-.intro-b .face img { width: 100%; height: 100%; object-fit: cover; }
-.intro-b .face::after {
-  /* Sheen that slides across with the turn. */
-  content: ""; position: absolute; inset: 0; border-radius: 50%;
-  background: linear-gradient(115deg, transparent 30%, rgba(255, 225, 190, .28) 48%, transparent 66%);
-  background-size: 260% 100%;
-  background-position: calc(100% - var(--turn) * 100%) 0;
-  mix-blend-mode: screen;
-}
-.intro-b .back {
-  transform: rotateY(180deg);
-  display: grid; place-items: center; align-content: center; gap: 18px;
-  background:
-    radial-gradient(circle at 35% 30%, #c9905f, #8a5530 45%, #3c2414 80%);
-}
-.intro-b .back b {
-  /* Engraved lettering on the bronze. */
-  font-family: var(--serif); font-weight: 700; font-size: min(10vh, 13vw); letter-spacing: .06em; line-height: 1;
-  color: #4a2a15; text-shadow: 0 1px 0 rgba(255, 214, 170, .45), 0 -1px 0 rgba(0, 0, 0, .55);
-}
-.intro-b .back span { font-size: clamp(10px, 1.4vh, 14px); letter-spacing: .4em; color: #3a2010; font-weight: 700; padding-left: .4em; text-shadow: 0 1px 0 rgba(255, 214, 170, .35); }
-.intro-b .back::before {
-  content: ""; position: absolute; inset: 7%; border-radius: 50%;
-  border: 1px solid rgba(60, 30, 12, .55); box-shadow: 0 1px 0 rgba(255, 214, 170, .25);
-}
-.intro-b .rim {
-  position: absolute; inset: 0; border-radius: 50%;
-  background: linear-gradient(90deg, #4a2c17, #b77a4b, #4a2c17);
-  transform: translateZ(var(--z));
-}
-.intro-b .lines { right: 7vw; top: 50%; transform: translateY(-50%); text-align: right; }
 
-/* ---------- C: Schriftzug ---------- */
-.intro-c { --s: clamp(0, calc(var(--p) * 2.6), 1); --r: clamp(0, calc((var(--p) - .04) * 2.2), 1); --m: clamp(0, calc((var(--p) - .3) * 6), 1); --f: clamp(0, calc((var(--p) - .9) * 10), 1); }
-.intro-c .letters {
-  position: absolute; z-index: 2; display: flex; gap: .04em;
-  font-family: var(--serif); font-weight: 600; font-size: min(25vw, 34vh); line-height: 1;
-  letter-spacing: .02em;
+/* 4. Light that wanders over the finished bronze. */
+.intro .glow {
+  pointer-events: none; mix-blend-mode: color-dodge;
+  background: radial-gradient(26% 24% at var(--lx) var(--ly), rgba(255, 214, 172, .36), transparent 72%);
+  -webkit-mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
+          mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
+  opacity: var(--c);
 }
-.intro-c .ltr {
-  display: inline-block;
-  background: linear-gradient(180deg, #f6dcbc 0%, #d9a06c 38%, #8c5631 70%, #e7b78a 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  transform: translateX(calc(var(--k) * var(--s) * 11vw)) translateY(calc(var(--s) * -8vh));
-  opacity: calc(1 - var(--s) * .82);
-}
-.intro-c .ltr > span { display: inline-block; transform: translateY(110%); opacity: 0; }
-.intro-on .intro-c .ltr > span { transform: none; opacity: 1; transition: transform 1.3s cubic-bezier(.2, .8, .2, 1) calc(.2s + var(--i) * .12s), opacity 1s ease calc(.2s + var(--i) * .12s); }
-.intro-c .figure {
-  position: relative; z-index: 1; height: min(78vh, 100vw); aspect-ratio: 1065 / 1035;
-  transform: translateY(calc((1 - var(--r)) * 75vh)) translateX(calc(var(--m) * 17vw + var(--e) * 4vw)) scale(calc(1 - var(--e) * .5));
-  opacity: calc(var(--r) - var(--f));
-}
-.intro-c .figure img {
-  width: 100%; height: 100%; object-fit: contain;
-  -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
-          mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
-}
-.intro-c .lines { left: 7vw; top: 50%; transform: translateY(-50%); }
 
-/* Phones: shorter scenes, lines at the bottom. */
+/* Phones: shorter scene, lines at the bottom, figure higher up. */
 @media (max-width: 760px) {
   .scene { height: 280vh; }
-  .intro-a .lines, .intro-b .lines, .intro-c .lines {
-    left: 20px; right: 20px; top: auto; bottom: 12vh; transform: none; text-align: left;
-  }
+  .lines { left: 20px; right: 20px; top: auto; bottom: 12vh; transform: none; }
   .line { font-size: 34px; }
-  .intro-a .figure { height: min(56vh, 92vw); transform: translateY(calc(-8vh - var(--m) * 10vh)) scale(calc(1 - var(--e) * .3)) rotateY(calc((var(--p) - .1) * -18deg)); }
-  .intro-b .coin { width: 70vw; transform: translate(calc(var(--e) * -36vw), calc(var(--m) * -14vh + var(--e) * -30vh)) scale(calc(1 - var(--m) * .2 - var(--e) * .7)) rotateY(calc(var(--turn) * 180deg)); }
-  .intro-c .figure { height: min(52vh, 96vw); transform: translateY(calc((1 - var(--r)) * 75vh - var(--m) * 16vh)); }
-  .intro-c .ltr { transform: translateX(calc(var(--k) * var(--s) * 14vw)) translateY(calc(var(--s) * -22vh)); }
+  .intro .figure { height: min(56vh, 92vw); transform: translateY(calc(-8vh - var(--m) * 10vh)) scale(calc(1 - var(--f) * .08)); }
 }
 
-/* Reduced motion: no pinned scene, everything in its end state. */
+/* Reduced motion: no pinned scene, finished bronze, no drawing. */
 .scene.static { height: auto; }
-.scene.static .stage { position: relative; height: auto; min-height: 80vh; }
+.scene.static .stage { position: relative; height: auto; min-height: 90vh; }
+.scene.static .lines { display: none; }
 @media (prefers-reduced-motion: reduce) {
-  .wordmark-wipe { clip-path: none; }
-  .intro-a .figure img { filter: none; transform: none; }
-  .intro-b .coin, .intro-c .ltr > span { opacity: 1; transform: none; }
+  .intro .wordmark { clip-path: none; opacity: 1; }
+  .intro .sketch, .intro .molten { display: none; }
+  .intro .cast { -webkit-mask-image: none; mask-image: none; }
+  .intro .figure { opacity: 1; transform: none; }
 }

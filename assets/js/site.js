@@ -53,7 +53,8 @@
     var y = window.scrollY;
     if (header) header.classList.toggle("scrolled", y > 8);
     if (art && !reduce) {
-      art.style.transform = "translateY(" + (y * (wide() ? 0.06 : 0.12)).toFixed(1) + "px)";
+      // Phones/tablets: the watermark drifts a little; on wide screens the frame stays where it is.
+      art.style.transform = wide() ? "" : "translateY(" + (y * 0.12).toFixed(1) + "px)";
       if (wide() && !pointerOnArt && hero) {
         // Scrolling down the hero moves the light from the head down over the robe.
         var p = Math.min(Math.max(y / hero.offsetHeight, 0), 1);

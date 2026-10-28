@@ -330,7 +330,7 @@ def simple(lang, title, canonical, body):
 
 
 # ---------- Intro previews (not linked, noindex) ----------
-LINES_DE = [("Eine Dachgesellschaft.", .16, .86), ("Drei Firmen.", .32, .86), ("<em>Echte Lösungen.</em>", .48, .86)]
+LINES_DE = [("Eine Dachgesellschaft.", .26, .86), ("Drei Firmen.", .4, .86), ("<em>Echte Lösungen.</em>", .54, .86)]
 
 
 def lines_html():
@@ -338,46 +338,17 @@ def lines_html():
 
 
 INTROS = {
-    "a": ("Bühne", "Justitia bildschirmfüllend, TRIMA wischt sich auf. Beim Scrollen dreht sie sich leicht, "
-                   "Licht wandert über die Bronze, drei Zeilen erscheinen, dann rückt sie nach rechts.", f"""
-    <section class="scene intro-a" data-scene aria-label="Intro">
+    "a": ("Bühne", "Justitia bildschirmfüllend: Sie zeichnet sich als feiner Bronze-Stich, TRIMA wischt sich auf. "
+                   "Beim Scrollen wird sie von unten nach oben in Bronze gegossen, Licht wandert, drei Zeilen erscheinen.", f"""
+    <section class="scene intro" data-scene aria-label="Intro">
       <div class="stage">
         <div class="figure">
-          <img src="/assets/img/justitia-hi.webp" alt="Justitia mit Waage – das Trima-Zeichen" width="1065" height="1035">
+          <span class="sketch" aria-hidden="true"></span>
+          <div class="cast"><img src="/assets/img/justitia-hi.webp" alt="Justitia mit Waage – das Trima-Zeichen" width="1065" height="1035"></div>
+          <span class="molten" aria-hidden="true"></span>
           <span class="glow" aria-hidden="true"></span>
         </div>
-        <img class="wordmark wordmark-wipe" src="/assets/img/trima-wordmark-hi.webp" alt="Trima" width="960" height="190">
-        <div class="lines">
-{lines_html()}
-        </div>
-        <div class="scroll-hint">Scrollen</div>
-      </div>
-    </section>"""),
-    "b": ("Medaille", "Justitia als Bronze-Münze. Beim Scrollen dreht sie sich um (Rückseite TRIMA) und fliegt "
-                      "am Ende nach oben links, wo das Logo sitzt.", """
-    <section class="scene intro-b" data-scene aria-label="Intro">
-      <div class="stage">
-        <div class="coin">
-""" + "\n".join(f'          <span class="rim" style="--z: {-z}px" aria-hidden="true"></span>' for z in range(1, 9)) + f"""
-          <div class="face front"><img src="/assets/img/justitia-coin.webp" alt="Justitia mit Waage – das Trima-Zeichen" width="720" height="720"></div>
-          <div class="face back" style="transform: rotateY(180deg) translateZ(9px)"><b>TRIMA</b><span>DUBAI</span></div>
-        </div>
-        <div class="lines">
-{lines_html()}
-        </div>
-        <div class="scroll-hint">Scrollen</div>
-      </div>
-    </section>"""),
-    "c": ("Schriftzug", "Ein riesiges TRIMA. Beim Scrollen gehen die Buchstaben auseinander und Justitia steigt "
-                        "dahinter auf, dann erscheinen die drei Zeilen.", """
-    <section class="scene intro-c" data-scene aria-label="Intro">
-      <div class="stage">
-        <div class="figure">
-          <img src="/assets/img/justitia-hi.webp" alt="Justitia mit Waage – das Trima-Zeichen" width="1065" height="1035">
-        </div>
-        <div class="letters" aria-label="Trima">""" + "".join(
-            f'<span class="ltr" style="--k: {i - 2}" aria-hidden="true"><span style="--i: {i}">{c}</span></span>'
-            for i, c in enumerate("TRIMA")) + f"""</div>
+        <img class="wordmark" src="/assets/img/trima-wordmark-hi.webp" alt="Trima" width="960" height="190">
         <div class="lines">
 {lines_html()}
         </div>

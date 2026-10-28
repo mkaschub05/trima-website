@@ -86,7 +86,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.005e
 .eyebrow .rule { display: inline-block; width: 28px; height: 1px; background: var(--bronze); vertical-align: middle; margin-right: 12px; }
 
 /* Framed Justitia artwork */
-.hero-art { margin: 0; justify-self: end; width: 100%; max-width: 440px; }
+.hero-art { margin: 28px 0 0; justify-self: end; align-self: start; width: 100%; max-width: min(440px, 58vh); }
 .hero-art .frame {
   position: relative; padding: 10px;
   border: 1px solid rgba(210, 154, 106, .35); border-radius: 4px;
