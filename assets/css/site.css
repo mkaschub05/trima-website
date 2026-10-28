@@ -22,7 +22,8 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+/* No scroll-behavior: smooth – on iPhone Safari it causes jumps and scrolling by itself. */
+html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--bg);

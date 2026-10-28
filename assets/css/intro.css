@@ -158,77 +158,20 @@ main > .scene:first-child { margin-top: -72px; }
   100% { opacity: 0; transform: none; }
 }
 
-/* ---------- Mode 2: touch devices – pinned, but stepped instead of scrubbed ----------
-   The stage stays pinned while the scene scrolls past (native sticky, smooth). intro.js only switches classes
-   s1…s5 on the scene when a threshold is crossed; each step then plays as a short time-based transition on the GPU.
-   Scrolling back removes the class and the step plays backwards. Nothing is computed per frame. */
+/* ---------- Mode 2: touch devices – pinned, scrubbed by intro.js ----------
+   Safari on iPhone mis-reports scroll-driven animations inside a sticky ancestor (WebKit fixed this only in later
+   26.x releases), which made the bronze jump to "filled". So on touch devices no CSS animation is tied to the scroll:
+   intro.js reads the scroll position each frame and sets transform/opacity directly on these few elements, with light
+   smoothing. The values below are the start state (before the script runs, and without JS). */
 @media (hover: none) {
   .scene { height: 260vh; }
   .lines { left: 20px; right: 20px; top: auto; bottom: 10vh; transform: none; }
-  .line { font-size: 34px; opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .9s cubic-bezier(.2, .7, .2, 1); }
-  .intro .figure {
-    height: min(56vh, 98vw); transform: translateY(-4vh);
-    transition: transform 1.2s cubic-bezier(.3, .7, .2, 1), opacity .9s ease;
-  }
-  .intro .sketch { opacity: .9; transition: opacity 1.6s ease; }
-  .intro .cast-track { transform: translate3d(0, 100%, 0); transition: transform 2s cubic-bezier(.5, 0, .25, 1); }
-  .intro .cast-in { transform: translate3d(0, -100%, 0); transition: transform 2s cubic-bezier(.5, 0, .25, 1); }
-  .intro .molten { opacity: 0; transition: opacity .3s ease; }
-  .intro .glow { opacity: 0; transition: opacity 1s ease; animation: t-glow 7s ease-in-out infinite alternate both; }
-  .intro .wordmark { transition: clip-path 1.8s cubic-bezier(.6, 0, .2, 1) 1.6s, opacity .6s ease; }
-  .scroll-hint { transition: opacity .5s ease; }
-
-  /* s1: bronze pours in */
-  .s1 .sketch { opacity: .35; }
-  .s1 .cast-track, .s1 .cast-in { transform: translate3d(0, 0, 0); }
-  .s1 .molten { animation: sd-molten 2s linear both; }
-  .s1 .glow { opacity: 1; transition-delay: 1.6s; }
-  .s1 .wordmark { opacity: 0; transition: clip-path 0s, opacity .6s ease; }
-  .s1 .scroll-hint { opacity: 0; }
-  /* s2–s4: figure moves up, lines appear one by one */
-  .s2 .figure { transform: translateY(-20vh) scale(.82); }
-  .s2 .line:nth-child(1), .s3 .line:nth-child(2), .s4 .line:nth-child(3) { opacity: 1; transform: none; }
-  /* s5: the scene ends */
-  .s5 .figure { opacity: 0; }
-  .s5 .line { opacity: 0; }
-
-  @keyframes t-glow { from { transform: translate3d(48%, -4%, 0); } to { transform: translate3d(14%, 70%, 0); } }
-}
-
-/* Touch devices with scroll-driven animations (Safari 26+, Chrome on Android): like the PC – the bronze fills exactly
-   as far as you have scrolled. The browser ties it to the scroll position itself, no JavaScript per frame.
-   Without this support the stepped version above stays. */
-@media (hover: none) and (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: --a) {
-    .scene { view-timeline: --intro block; }
-    .intro .figure, .intro .cast-track, .intro .cast-in, .intro .molten, .intro .glow,
-    .intro .wordmark, .scroll-hint, .line {
-      transition: none;
-      animation-timing-function: linear; animation-fill-mode: both; animation-duration: auto;
-      animation-timeline: --intro;
-    }
-    .intro .figure { animation-name: sd-figure-touch; animation-range: contain 0% contain 100%; }
-    .intro .cast-track { animation-name: sd-track; animation-range: contain 4% contain 42.5%; }
-    .intro .cast-in { animation-name: sd-in; animation-range: contain 4% contain 42.5%; }
-    .intro .molten { animation-name: sd-molten; animation-range: contain 4% contain 42.5%; }
-    .intro .glow { animation-name: sd-glow; animation-range: contain 0% contain 100%; }
-    .intro .wordmark { animation-name: sd-out; animation-range: contain 1.5% contain 10%; transition: clip-path 1.8s cubic-bezier(.6, 0, .2, 1) 1.6s; }
-    .scroll-hint { animation-name: sd-out; animation-range: contain 0% contain 4%; }
-    .line { animation-name: sd-line; }
-    .line:nth-child(1) { animation-range: contain 26% contain 86%; }
-    .line:nth-child(2) { animation-range: contain 40% contain 86%; }
-    .line:nth-child(3) { animation-range: contain 54% contain 86%; }
-    .intro .sketch, .intro-on .intro .sketch {
-      transition: none;
-      animation: draw 2.2s cubic-bezier(.45, 0, .2, 1) .2s both, sd-sketch linear both;
-      animation-timeline: auto, --intro; animation-range: normal, contain 4% contain 42.5%;
-    }
-  }
-}
-@keyframes sd-figure-touch {
-  0%, 10% { transform: translateY(-4vh) scale(1); opacity: 1; }
-  30%, 88% { transform: translateY(-20vh) scale(.82); opacity: 1; }
-  100% { transform: translateY(-20vh) scale(.78); opacity: 0; }
+  .line { font-size: 34px; opacity: 0; transform: translateY(28px); }
+  .intro .figure { height: min(56vh, 98vw); transform: translateY(-4vh); }
+  .intro .sketch { opacity: .9; }
+  .intro .cast-track { transform: translate3d(0, 100%, 0); }
+  .intro .cast-in { transform: translate3d(0, -100%, 0); }
+  .intro .molten, .intro .glow { opacity: 0; }
 }
 
 /* Phones (any input): lines at the bottom. */
