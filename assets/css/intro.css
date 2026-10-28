@@ -76,38 +76,34 @@ main > .scene:first-child { margin-top: -72px; }
 .intro-on .intro .sketch { animation: draw 2.6s cubic-bezier(.45, 0, .2, 1) .2s forwards; }
 @keyframes draw { to { -webkit-mask-position: center, 0 0, center; mask-position: center, 0 0, center; } }
 
-/* 2. Bronze cast: the real artwork, revealed from the bottom up as you scroll. */
-.intro .cast {
-  -webkit-mask-image: linear-gradient(to top, #000 calc(var(--c) * 112% - 10%), transparent calc(var(--c) * 112%));
-          mask-image: linear-gradient(to top, #000 calc(var(--c) * 112% - 10%), transparent calc(var(--c) * 112%));
-}
+/* 2. Bronze cast, revealed from the bottom up as you scroll. Only transforms change while scrolling (no
+   moving masks or gradients), so the GPU just shifts layers and nothing is repainted – smooth on phones.
+   The track (window + glowing seam) slides up, the picture inside slides down by the same amount and so stays put. */
+.intro .cast-track { transform: translate3d(0, calc((1 - var(--c)) * 100%), 0); will-change: transform; }
+.intro .cast { position: absolute; inset: 0; overflow: hidden; }
+.intro .cast-in { position: absolute; inset: 0; transform: translate3d(0, calc((var(--c) - 1) * 100%), 0); will-change: transform; }
 .intro .cast img {
   width: 100%; height: 100%; object-fit: contain;
   -webkit-mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
           mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
 }
 
-/* 3. Molten edge: the lines glow brightly in a narrow band at the casting front. */
+/* 3. Molten edge: a glowing seam on the top edge of the window, so it rises with the bronze. */
 .intro .molten {
-  background: linear-gradient(#fff4e0, #ffc27a);
-  -webkit-mask-image: url(/assets/img/justitia-lines.webp),
-    linear-gradient(to top, transparent calc(var(--c) * 112% - 14%), #000 calc(var(--c) * 112% - 6%), transparent calc(var(--c) * 112% + 2%)), radial-gradient(closest-side, #000 74%, transparent 96%);
-          mask-image: url(/assets/img/justitia-lines.webp),
-    linear-gradient(to top, transparent calc(var(--c) * 112% - 14%), #000 calc(var(--c) * 112% - 6%), transparent calc(var(--c) * 112% + 2%)), radial-gradient(closest-side, #000 74%, transparent 96%);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-composite: source-in; mask-composite: intersect;
+  position: absolute; left: 12%; right: 12%; top: -3.5%; height: 7%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(255, 226, 180, .95), rgba(255, 170, 90, .45) 45%, transparent 72%);
   opacity: calc(min(var(--c) * 12, 1) * min((1 - var(--c)) * 12, 1));
-  filter: drop-shadow(0 0 6px rgba(255, 180, 100, .9));
 }
 
-/* 4. Light that wanders over the finished bronze. */
+/* 4. Light that wanders over the finished bronze: a soft spot that is only moved, never redrawn. */
 .intro .glow {
-  pointer-events: none; mix-blend-mode: color-dodge;
-  background: radial-gradient(26% 24% at var(--lx) var(--ly), rgba(255, 214, 172, .36), transparent 72%);
-  -webkit-mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
-          mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
-  opacity: var(--c);
+  inset: auto; left: 0; top: 0; width: 52%; height: 52%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 214, 172, .22), transparent 70%);
+  transform: translate3d(calc(48% + var(--p) * -30%), calc(-6% + var(--p) * 110%), 0);
+  opacity: var(--c); will-change: transform, opacity;
 }
+.intro .figure { will-change: transform, opacity; }
+.intro .sketch { will-change: opacity; }
 
 /* Phones: shorter scene, lines at the bottom, figure higher up. */
 @media (max-width: 760px) {

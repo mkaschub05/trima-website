@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parent.parent
 T = {
     "en": {
         "home": "/", "legal": "/legal/", "other_lang": "de", "other_home": "/de/", "other_label": "DE",
-        "other_name": "Deutsch",
+        "other_name": "German",
         "nav_companies": "Companies", "nav_contact": "Contact", "id_companies": "companies", "id_contact": "contact",
         "home_label": "Trima – home",
         "description": "Trima is the parent company of VIRENTIO, LOCENTIO and EXEMPTIO. "
@@ -343,8 +343,10 @@ def intro_html(lang):
       <div class="stage">
         <div class="figure">
           <span class="sketch" aria-hidden="true"></span>
-          <div class="cast"><img src="/assets/img/justitia-hi.webp" alt="{t['art_alt']}" width="1065" height="1035"></div>
-          <span class="molten" aria-hidden="true"></span>
+          <div class="cast-track">
+            <div class="cast"><div class="cast-in"><img src="/assets/img/justitia-hi.webp" alt="{t['art_alt']}" width="1065" height="1035"></div></div>
+            <span class="molten" aria-hidden="true"></span>
+          </div>
           <span class="glow" aria-hidden="true"></span>
         </div>
         <img class="wordmark" src="/assets/img/trima-wordmark-hi.webp" alt="Trima" width="960" height="190">

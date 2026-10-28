@@ -180,7 +180,7 @@ section + section { border-top: 1px solid var(--line); }
 }
 .company, .contact-panel { position: relative; isolation: isolate; }
 .company:hover { border-color: rgba(210, 154, 106, .35); transform: translateY(-3px); box-shadow: 0 24px 60px -30px rgba(0, 0, 0, .9); }
-.company { transition: border-color .3s, transform .5s cubic-bezier(.2, .7, .2, 1), box-shadow .5s, opacity .9s, filter .9s; }
+.company { transition: border-color .3s, transform .5s cubic-bezier(.2, .7, .2, 1), box-shadow .5s, opacity .9s; }
 [data-spot]::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
   background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(210, 154, 106, .09), transparent 60%);
@@ -271,10 +271,10 @@ body::after {
 }
 
 /* Reveal: only when JS is running, so nothing stays hidden without it. */
-.js [data-reveal] { opacity: 0; transform: translateY(22px); filter: blur(4px); }
+.js [data-reveal] { opacity: 0; transform: translateY(22px); }
 .js [data-reveal].in {
-  opacity: 1; transform: none; filter: none;
-  transition: opacity .9s cubic-bezier(.2, .7, .2, 1) var(--d, 0s), transform .9s cubic-bezier(.2, .7, .2, 1) var(--d, 0s), filter .9s ease var(--d, 0s);
+  opacity: 1; transform: none;
+  transition: opacity .9s cubic-bezier(.2, .7, .2, 1) var(--d, 0s), transform .9s cubic-bezier(.2, .7, .2, 1) var(--d, 0s);
 }
 .js .company[data-reveal].in:hover { transform: translateY(-3px); transition-delay: 0s; }
 [data-words] .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
@@ -289,6 +289,13 @@ body::after {
 .js .eyebrow[data-reveal].in .rule { transform: scaleX(1); transition: transform 1.2s cubic-bezier(.2, .7, .2, 1) .3s; }
 
 @keyframes drift { from { transform: translate(0, 0) scale(1); } to { transform: translate(-12%, 10%) scale(1.15); } }
+
+/* Touch devices (phones, tablets): drop the effects that make Safari repaint while scrolling. */
+@media (hover: none) {
+  body::after { display: none; }
+  .site-header { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(8, 6, 5, .97); }
+  .hero::before { animation: none; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
