@@ -45,7 +45,18 @@
   }, { passive: true });
   window.addEventListener("resize", update);
   update();
-  // Intro entrance (wordmark wipe, figure from darkness) starts once the page is ready.
-  void document.body.offsetHeight;
-  document.documentElement.classList.add("intro-on");
+  // Intro entrance (engraving drawn in, wordmark wipe) starts once the line art is loaded, so the drawing is
+  // never half done before the picture arrives. At most 2.5 s wait on a slow connection.
+  var started = false;
+  function start() {
+    if (started) return;
+    started = true;
+    void document.body.offsetHeight;
+    document.documentElement.classList.add("intro-on");
+  }
+  var art = new Image();
+  art.onload = art.onerror = start;
+  art.src = "/assets/img/justitia-lines-bronze.webp";
+  if (art.complete) start();
+  setTimeout(start, 2500);
 })();

@@ -8,6 +8,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
+
+def v(path):
+    """Asset URL with a content hash, so a browser never mixes a new page with an old cached file."""
+    import hashlib
+    h = hashlib.sha1((ROOT / path.lstrip("/")).read_bytes()).hexdigest()[:8]
+    return f"{path}?v={h}"
+
+
 T = {
     "en": {
         "home": "/", "legal": "/legal/", "other_lang": "de", "other_home": "/de/", "other_label": "DE",
@@ -157,9 +165,9 @@ def head(t, lang, title, canonical, description=None, index=True, extra=""):
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/img/favicon-48.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="{v('/assets/css/site.css')}">
   <script>document.documentElement.classList.add("js");if("scrollRestoration"in history&&!location.hash){{history.scrollRestoration="manual";addEventListener("pageshow",function(){{scrollTo(0,0)}})}}</script>
-  <script src="/assets/js/site.js" defer></script>{extra}
+  <script src="{v('/assets/js/site.js')}" defer></script>{extra}
 </head>
 <body>"""
 
@@ -364,11 +372,11 @@ def intro_html(lang):
     </section>"""
 
 
-INTRO_HEAD = """
+INTRO_HEAD = f"""
   <link rel="preload" as="image" href="/assets/img/justitia-lines-bronze.webp" type="image/webp" fetchpriority="high">
   <link rel="preload" as="image" href="/assets/img/justitia-cast.webp" imagesrcset="/assets/img/justitia-cast-640.webp 640w, /assets/img/justitia-cast.webp 1065w" imagesizes="(max-width: 760px) 88vw, 64vh">
-  <link rel="stylesheet" href="/assets/css/intro.css">
-  <script src="/assets/js/intro.js" defer></script>"""
+  <link rel="stylesheet" href="{v('/assets/css/intro.css')}">
+  <script src="{v('/assets/js/intro.js')}" defer></script>"""
 
 
 NOT_FOUND = """      <h1>Page not found</h1>
