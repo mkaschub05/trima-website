@@ -195,6 +195,42 @@ main > .scene:first-child { margin-top: -72px; }
   @keyframes t-glow { from { transform: translate3d(48%, -4%, 0); } to { transform: translate3d(14%, 70%, 0); } }
 }
 
+/* Touch devices with scroll-driven animations (Safari 26+, Chrome on Android): like the PC – the bronze fills exactly
+   as far as you have scrolled. The browser ties it to the scroll position itself, no JavaScript per frame.
+   Without this support the stepped version above stays. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: --a) {
+    .scene { view-timeline: --intro block; }
+    .intro .figure, .intro .cast-track, .intro .cast-in, .intro .molten, .intro .glow,
+    .intro .wordmark, .scroll-hint, .line {
+      transition: none;
+      animation-timing-function: linear; animation-fill-mode: both; animation-duration: auto;
+      animation-timeline: --intro;
+    }
+    .intro .figure { animation-name: sd-figure-touch; animation-range: contain 0% contain 100%; }
+    .intro .cast-track { animation-name: sd-track; animation-range: contain 4% contain 42.5%; }
+    .intro .cast-in { animation-name: sd-in; animation-range: contain 4% contain 42.5%; }
+    .intro .molten { animation-name: sd-molten; animation-range: contain 4% contain 42.5%; }
+    .intro .glow { animation-name: sd-glow; animation-range: contain 0% contain 100%; }
+    .intro .wordmark { animation-name: sd-out; animation-range: contain 1.5% contain 10%; transition: clip-path 1.8s cubic-bezier(.6, 0, .2, 1) 1.6s; }
+    .scroll-hint { animation-name: sd-out; animation-range: contain 0% contain 4%; }
+    .line { animation-name: sd-line; }
+    .line:nth-child(1) { animation-range: contain 26% contain 86%; }
+    .line:nth-child(2) { animation-range: contain 40% contain 86%; }
+    .line:nth-child(3) { animation-range: contain 54% contain 86%; }
+    .intro .sketch, .intro-on .intro .sketch {
+      transition: none;
+      animation: draw 2.2s cubic-bezier(.45, 0, .2, 1) .2s both, sd-sketch linear both;
+      animation-timeline: auto, --intro; animation-range: normal, contain 4% contain 42.5%;
+    }
+  }
+}
+@keyframes sd-figure-touch {
+  0%, 10% { transform: translateY(-4vh) scale(1); opacity: 1; }
+  30%, 88% { transform: translateY(-20vh) scale(.82); opacity: 1; }
+  100% { transform: translateY(-20vh) scale(.78); opacity: 0; }
+}
+
 /* Phones (any input): lines at the bottom. */
 @media (max-width: 760px) {
   .scene { height: 280vh; }

@@ -30,7 +30,7 @@
       var total = s.offsetHeight - vh;
       var p = total > 0 ? Math.min(Math.max(-r.top / total, 0), 1) : 0;
       if (!cssDriven && !touch) s.style.setProperty("--p", p.toFixed(4));
-      if (touch) {
+      if (touch && !cssDriven) {   // stepped fallback only where the browser cannot scrub by itself
         var step = 0;
         if (userScrolled && window.scrollY > 60) while (step < STEPS.length && p >= STEPS[step]) step++;
         if (s._step !== step) {
