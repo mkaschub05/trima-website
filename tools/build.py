@@ -350,7 +350,7 @@ def intro_html(lang):
         <div class="figure">
           <span class="sketch" aria-hidden="true"></span>
           <div class="cast-track">
-            <div class="cast"><div class="cast-in"><img src="/assets/img/justitia-hi.webp" srcset="/assets/img/justitia-640.webp 640w, /assets/img/justitia-hi.webp 1065w" sizes="(max-width: 760px) 92vw, 64vh" alt="{t['art_alt']}" width="1065" height="1035" fetchpriority="high"></div></div>
+            <div class="cast"><div class="cast-in"><img src="/assets/img/justitia-cast.webp" srcset="/assets/img/justitia-cast-640.webp 640w, /assets/img/justitia-cast.webp 1065w" sizes="(max-width: 760px) 88vw, 64vh" alt="{t['art_alt']}" width="1065" height="1035" fetchpriority="high"></div></div>
             <span class="molten" aria-hidden="true"></span>
           </div>
           <span class="glow" aria-hidden="true"></span>
@@ -365,8 +365,8 @@ def intro_html(lang):
 
 
 INTRO_HEAD = """
-  <link rel="preload" as="image" href="/assets/img/justitia-lines.webp" type="image/webp">
-  <link rel="preload" as="image" href="/assets/img/justitia-hi.webp" imagesrcset="/assets/img/justitia-640.webp 640w, /assets/img/justitia-hi.webp 1065w" imagesizes="(max-width: 760px) 92vw, 64vh" fetchpriority="high">
+  <link rel="preload" as="image" href="/assets/img/justitia-lines-bronze.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="/assets/img/justitia-cast.webp" imagesrcset="/assets/img/justitia-cast-640.webp 640w, /assets/img/justitia-cast.webp 1065w" imagesizes="(max-width: 760px) 88vw, 64vh">
   <link rel="stylesheet" href="/assets/css/intro.css">
   <script src="/assets/js/intro.js" defer></script>"""
 

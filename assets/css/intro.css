@@ -1,4 +1,12 @@
-/* Intro scene „Bühne“. --p (0…1) comes from assets/js/intro.js while the scene scrolls past. */
+/* Intro „Kupferstich → Bronzeguss“.
+   Two modes:
+   - Pointer devices (PC): the scene is pinned and follows the scroll position. Scroll-driven CSS animations where
+     supported, otherwise --p (0…1) from assets/js/intro.js.
+   - Touch devices (phones, tablets): the intro plays by itself once, time-based, and the page scrolls normally.
+     Time-based transform/opacity animations run on the GPU, so nothing can lag behind the finger.
+   Soft edges and bronze colour are baked into the images (tools/bake.swift): no CSS masks at runtime. */
+
+/* ---------- Layout (both modes) ---------- */
 .scene { position: relative; height: 340vh; background: var(--bg); --p: 0; padding: 0; border: 0; }
 /* The (hidden) sticky header still takes its height in the flow; pull the first scene up under it. */
 main > .scene:first-child { margin-top: -72px; }
@@ -8,7 +16,7 @@ main > .scene:first-child { margin-top: -72px; }
   display: grid; place-items: center;
 }
 
-/* While the scene runs, the header stays out of the way. */
+/* While the scene is on screen, the header stays out of the way. */
 .site-header { transition: opacity .5s, transform .5s, background .3s, box-shadow .3s; }
 .in-intro .site-header { opacity: 0; transform: translateY(-100%); pointer-events: none; }
 
@@ -16,7 +24,6 @@ main > .scene:first-child { margin-top: -72px; }
   position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%);
   display: grid; justify-items: center; gap: 10px;
   font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--faint);
-  opacity: clamp(0, calc(1 - var(--p) * 25), 1);
 }
 .scroll-hint::after {
   content: ""; width: 1px; height: 44px; transform-origin: top;
@@ -25,93 +32,171 @@ main > .scene:first-child { margin-top: -72px; }
 }
 @keyframes hint { 0% { transform: scaleY(0); opacity: 1; } 60% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
 
-/* Lines that appear one after another: each has its own window --a … --b. */
 .lines { position: absolute; z-index: 3; left: 7vw; top: 50%; transform: translateY(-50%); display: grid; gap: .1em; pointer-events: none; }
-.line {
-  font-family: var(--serif); font-weight: 600; line-height: 1.05; color: var(--text);
-  font-size: clamp(30px, 4.6vw, 68px);
-  --in: clamp(0, calc((var(--p) - var(--a)) * 9), 1);
-  --out: clamp(0, calc((var(--b) - var(--p)) * 9), 1);
-  opacity: min(var(--in), var(--out));
-  transform: translateY(calc((1 - var(--in)) * 28px));
-}
+.line { font-family: var(--serif); font-weight: 600; line-height: 1.05; color: var(--text); font-size: clamp(30px, 4.6vw, 68px); }
 .line em { font-style: normal; color: var(--bronze); }
 
-/* Wordmark wipes in on load and leaves on the first scroll. */
-.intro .wordmark {
-  position: absolute; z-index: 2; bottom: 7vh; width: min(460px, 70vw);
-  opacity: clamp(0, calc((.1 - var(--p)) * 12), 1);
-  clip-path: inset(0 100% 0 0);
-}
+.intro .wordmark { position: absolute; z-index: 2; bottom: 7vh; width: min(460px, 70vw); clip-path: inset(0 100% 0 0); }
 .intro-on .intro .wordmark { clip-path: inset(0 0 0 0); transition: clip-path 1.8s cubic-bezier(.6, 0, .2, 1) 1.6s; }
 
-/* ---- The figure: engraving first, then bronze is cast into it while scrolling ---- */
-.intro {
-  --c: clamp(0, calc((var(--p) - .04) * 2.6), 1);          /* casting 0…1 */
-  --m: clamp(0, calc((var(--p) - .1) * 5), 1);             /* moves aside for the lines */
-  --f: clamp(0, calc((var(--p) - .88) * 8.5), 1);          /* fades out at the end */
-}
-.intro .figure {
-  position: relative; z-index: 1;
-  height: min(64vh, 92vw); aspect-ratio: 1065 / 1035;
-  transform: translate(calc(var(--m) * 21vw), calc((1 - var(--m)) * -6vh)) scale(calc(1 + var(--m) * .06 - var(--f) * .08));
-  opacity: calc(1 - var(--f));
-  --lx: calc(62% - var(--p) * 22%);
-  --ly: calc(16% + var(--p) * 66%);
-}
+.intro .figure { position: relative; z-index: 1; height: min(64vh, 92vw); aspect-ratio: 1065 / 1035; will-change: transform, opacity; }
 .intro .figure > * { position: absolute; inset: 0; }
 
-/* 1. Engraving: bronze lines (the line-art image is only an alpha mask), drawn in diagonally on load. */
+/* 1. Engraving: pre-coloured bronze line art, drawn in with a diagonal wipe on load. */
 .intro .sketch {
-  background: linear-gradient(170deg, #f6d8b6, #d29a6a 45%, #9a6238);
-  /* Line art × diagonal drawing sweep × soft edge (hides the frame the line filter finds at the border). */
-  -webkit-mask-image: url(/assets/img/justitia-lines.webp), linear-gradient(120deg, #000 42%, transparent 58%), radial-gradient(closest-side, #000 74%, transparent 96%);
-          mask-image: url(/assets/img/justitia-lines.webp), linear-gradient(120deg, #000 42%, transparent 58%), radial-gradient(closest-side, #000 74%, transparent 96%);
-  -webkit-mask-size: 100% 100%, 320% 100%, 100% 100%; mask-size: 100% 100%, 320% 100%, 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  -webkit-mask-position: center, 100% 0, center; mask-position: center, 100% 0, center;
-  -webkit-mask-composite: source-in; mask-composite: intersect;
-  opacity: calc(.9 - var(--c) * .5);
+  background: url(/assets/img/justitia-lines-bronze.webp) center / 100% 100% no-repeat;
+  clip-path: polygon(0 0, 0 0, -30% 100%, 0 100%);
+  will-change: opacity;
 }
-.intro-on .intro .sketch { animation: draw 2.6s cubic-bezier(.45, 0, .2, 1) .2s forwards; }
-@keyframes draw { to { -webkit-mask-position: center, 0 0, center; mask-position: center, 0 0, center; } }
+.intro-on .intro .sketch { animation: draw 2.6s cubic-bezier(.45, 0, .2, 1) .2s both; }
+@keyframes draw { from { clip-path: polygon(0 0, 0 0, -30% 100%, 0 100%); } to { clip-path: polygon(0 0, 130% 0, 100% 100%, 0 100%); } }
 
-/* 2. Bronze cast, revealed from the bottom up as you scroll. Only transforms change while scrolling (no
-   moving masks or gradients), so the GPU just shifts layers and nothing is repainted – smooth on phones.
-   The track (window + glowing seam) slides up, the picture inside slides down by the same amount and so stays put. */
-.intro .cast-track { transform: translate3d(0, calc((1 - var(--c)) * 100%), 0); will-change: transform; }
+/* 2. Bronze cast: the window (.cast) slides up inside the track while the picture slides down by the same amount,
+   so it stays in place and is revealed from the bottom up – transforms only. */
+.intro .cast-track { will-change: transform; }
 .intro .cast { position: absolute; inset: 0; overflow: hidden; }
-.intro .cast-in { position: absolute; inset: 0; transform: translate3d(0, calc((var(--c) - 1) * 100%), 0); will-change: transform; }
-.intro .cast img {
-  width: 100%; height: 100%; object-fit: contain;
-  -webkit-mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
-          mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
-}
+.intro .cast-in { position: absolute; inset: 0; will-change: transform; }
+.intro .cast img { width: 100%; height: 100%; object-fit: contain; }
 
-/* 3. Molten edge: a glowing seam on the top edge of the window, so it rises with the bronze. */
+/* 3. Molten seam on the top edge of the rising bronze. */
 .intro .molten {
-  position: absolute; left: 12%; right: 12%; top: -3.5%; height: 7%;
+  position: absolute; inset: auto; left: 12%; right: 12%; top: -3.5%; height: 7%;
   background: radial-gradient(50% 50% at 50% 50%, rgba(255, 226, 180, .95), rgba(255, 170, 90, .45) 45%, transparent 72%);
-  opacity: calc(min(var(--c) * 12, 1) * min((1 - var(--c)) * 12, 1));
 }
 
-/* 4. Light that wanders over the finished bronze: a soft spot that is only moved, never redrawn. */
+/* 4. Light that wanders over the finished bronze: a soft spot that is only moved. */
 .intro .glow {
   inset: auto; left: 0; top: 0; width: 52%; height: 52%; pointer-events: none;
   background: radial-gradient(closest-side, rgba(255, 214, 172, .22), transparent 70%);
-  transform: translate3d(calc(48% + var(--p) * -30%), calc(-6% + var(--p) * 110%), 0);
-  opacity: var(--c); will-change: transform, opacity;
+  will-change: transform, opacity;
 }
-.intro .figure { will-change: transform, opacity; }
-.intro .sketch { will-change: opacity; }
 
-/* Phones: shorter scene, lines at the bottom, figure higher up. */
+/* ---------- Mode 1: pointer devices, pinned and scroll-linked ---------- */
+@media (hover: hover) {
+  .intro {
+    --c: clamp(0, calc((var(--p) - .04) * 2.6), 1);          /* casting 0…1 */
+    --m: clamp(0, calc((var(--p) - .1) * 5), 1);              /* moves aside for the lines */
+    --f: clamp(0, calc((var(--p) - .88) * 8.5), 1);          /* fades out at the end */
+  }
+  .intro .figure {
+    transform: translate(calc(var(--m) * 21vw), calc((1 - var(--m)) * -6vh)) scale(calc(1 + var(--m) * .06 - var(--f) * .08));
+    opacity: calc(1 - var(--f));
+  }
+  .intro .sketch { opacity: calc(.9 - var(--c) * .5); }
+  .intro .cast-track { transform: translate3d(0, calc((1 - var(--c)) * 100%), 0); }
+  .intro .cast-in { transform: translate3d(0, calc((var(--c) - 1) * 100%), 0); }
+  .intro .molten { opacity: calc(min(var(--c) * 12, 1) * min((1 - var(--c)) * 12, 1)); }
+  .intro .glow { transform: translate3d(calc(48% + var(--p) * -30%), calc(-6% + var(--p) * 110%), 0); opacity: var(--c); }
+  .intro .wordmark { opacity: clamp(0, calc((.1 - var(--p)) * 12), 1); }
+  .scroll-hint { opacity: clamp(0, calc(1 - var(--p) * 25), 1); }
+  .line {
+    --in: clamp(0, calc((var(--p) - var(--a)) * 9), 1);
+    --out: clamp(0, calc((var(--b) - var(--p)) * 9), 1);
+    opacity: min(var(--in), var(--out));
+    transform: translateY(calc((1 - var(--in)) * 28px));
+  }
+
+  /* Scroll-driven version: the browser ties every frame to the scroll position itself (no JS per frame).
+     "contain 0%" = scene top at the top of the screen, "contain 100%" = scene bottom at the bottom = p 0 … 1. */
+  @supports (animation-timeline: --a) {
+    @media (prefers-reduced-motion: no-preference) {
+      .scene { view-timeline: --intro block; }
+      .intro .figure, .intro .cast-track, .intro .cast-in, .intro .molten, .intro .glow,
+      .intro .wordmark, .scroll-hint, .line {
+        animation-timing-function: linear; animation-fill-mode: both; animation-duration: auto;
+        animation-timeline: --intro;
+      }
+      .intro .figure { animation-name: sd-figure; animation-range: contain 0% contain 100%; }
+      .intro .cast-track { animation-name: sd-track; animation-range: contain 4% contain 42.5%; }
+      .intro .cast-in { animation-name: sd-in; animation-range: contain 4% contain 42.5%; }
+      .intro .molten { animation-name: sd-molten; animation-range: contain 4% contain 42.5%; }
+      .intro .glow { animation-name: sd-glow; animation-range: contain 0% contain 100%; }
+      .intro .wordmark { animation-name: sd-out; animation-range: contain 1.5% contain 10%; }
+      .scroll-hint { animation-name: sd-out; animation-range: contain 0% contain 4%; }
+      .line { animation-name: sd-line; }
+      .line:nth-child(1) { animation-range: contain 26% contain 86%; }
+      .line:nth-child(2) { animation-range: contain 40% contain 86%; }
+      .line:nth-child(3) { animation-range: contain 54% contain 86%; }
+      .intro .sketch, .intro-on .intro .sketch {
+        animation: draw 2.6s cubic-bezier(.45, 0, .2, 1) .2s both, sd-sketch linear both;
+        animation-timeline: auto, --intro; animation-range: normal, contain 4% contain 42.5%;
+      }
+    }
+  }
+}
+@media (hover: hover) and (max-width: 760px) {
+  .intro .figure { transform: translateY(calc(-8vh - var(--m) * 10vh)) scale(calc(1 - var(--f) * .08)); }
+}
+@supports (animation-timeline: --a) {
+  @media (hover: hover) and (max-width: 760px) and (prefers-reduced-motion: no-preference) {
+    .intro .figure { animation-name: sd-figure-sm; }
+  }
+}
+@keyframes sd-figure-sm {
+  0%, 10% { transform: translateY(-8vh) scale(1); opacity: 1; }
+  30%, 88% { transform: translateY(-18vh) scale(1); opacity: 1; }
+  100% { transform: translateY(-18vh) scale(.92); opacity: 0; }
+}
+@keyframes sd-figure {
+  0%, 10% { transform: translate(0, -6vh) scale(1); opacity: 1; }
+  30%, 88% { transform: translate(21vw, 0) scale(1.06); opacity: 1; }
+  100% { transform: translate(21vw, 0) scale(.98); opacity: 0; }
+}
+@keyframes sd-track { from { transform: translate3d(0, 100%, 0); } to { transform: translate3d(0, 0, 0); } }
+@keyframes sd-in { from { transform: translate3d(0, -100%, 0); } to { transform: translate3d(0, 0, 0); } }
+@keyframes sd-molten { 0% { opacity: 0; } 8%, 92% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes sd-glow {
+  0% { transform: translate3d(48%, -6%, 0); opacity: 0; }
+  42% { opacity: 1; }
+  100% { transform: translate3d(18%, 104%, 0); opacity: 1; }
+}
+@keyframes sd-sketch { from { opacity: .9; } to { opacity: .4; } }
+@keyframes sd-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes sd-line {
+  0% { opacity: 0; transform: translateY(28px); }
+  20%, 80% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: none; }
+}
+
+/* ---------- Mode 2: touch devices, plays by itself, page scrolls normally ---------- */
+@media (hover: none) {
+  .scene { height: auto; }
+  .scene .stage { position: relative; }
+  .lines { left: 20px; right: 20px; top: auto; bottom: 10vh; transform: none; }
+  .line { font-size: 34px; opacity: 0; }
+  .intro .figure { height: min(46vh, 84vw); transform: translateY(-17vh); }
+  .intro .sketch { opacity: .9; }
+  .intro .cast-track { transform: translate3d(0, 100%, 0); }
+  .intro .cast-in { transform: translate3d(0, -100%, 0); }
+  .intro .molten, .intro .glow { opacity: 0; }
+  .scroll-hint { opacity: 0; }
+
+  .intro-on .intro .sketch { animation: draw 2.2s cubic-bezier(.45, 0, .2, 1) .2s both, t-sketch 1.6s ease 2.4s both; }
+  .intro-on .intro .cast-track { animation: sd-track 2.4s cubic-bezier(.5, 0, .25, 1) 2.2s both; }
+  .intro-on .intro .cast-in { animation: sd-in 2.4s cubic-bezier(.5, 0, .25, 1) 2.2s both; }
+  .intro-on .intro .molten { animation: sd-molten 2.4s linear 2.2s both; }
+  .intro-on .intro .glow { animation: t-glow-in 1s ease 4.4s both, t-glow 7s ease-in-out 4.4s infinite alternate both; }
+  .intro-on .intro .wordmark { animation: sd-out .7s ease 4.4s both; }
+  .intro-on .line { animation: t-line .9s cubic-bezier(.2, .7, .2, 1) both; }
+  .intro-on .line:nth-child(1) { animation-delay: 4.8s; }
+  .intro-on .line:nth-child(2) { animation-delay: 5.3s; }
+  .intro-on .line:nth-child(3) { animation-delay: 5.8s; }
+  .intro-on .scroll-hint { animation: t-show .8s ease 6.6s both; }
+
+  @keyframes t-sketch { from { opacity: .9; } to { opacity: .35; } }
+  @keyframes t-glow-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes t-glow { from { transform: translate3d(48%, -4%, 0); } to { transform: translate3d(14%, 70%, 0); } }
+  @keyframes t-line { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  @keyframes t-show { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* Phones (any input): lines at the bottom. */
 @media (max-width: 760px) {
   .scene { height: 280vh; }
   .lines { left: 20px; right: 20px; top: auto; bottom: 12vh; transform: none; }
   .line { font-size: 34px; }
-  .intro .figure { height: min(56vh, 92vw); transform: translateY(calc(-8vh - var(--m) * 10vh)) scale(calc(1 - var(--f) * .08)); }
 }
+@media (max-width: 760px) and (hover: none) { .scene { height: auto; } .lines { bottom: 10vh; } }
 
 /* Reduced motion: no pinned scene, finished bronze, no drawing. */
 .scene.static { height: auto; }
@@ -120,69 +205,6 @@ main > .scene:first-child { margin-top: -72px; }
 @media (prefers-reduced-motion: reduce) {
   .intro .wordmark { clip-path: none; opacity: 1; }
   .intro .sketch, .intro .molten { display: none; }
-  .intro .cast { -webkit-mask-image: none; mask-image: none; }
+  .intro .cast-track, .intro .cast-in { transform: none !important; animation: none !important; }
   .intro .figure { opacity: 1; transform: none; }
-}
-
-/* ---------------------------------------------------------------------------------------------------------------
-   Scroll-driven version (Safari 26+, Chrome, Edge): the browser ties every movement directly to the scroll position
-   on the compositor – no JavaScript per frame, so nothing lags behind the finger on phones. Only transform and opacity
-   are animated. The keyframes reproduce the --p formulas above; intro.js leaves --p alone when this is supported.
-   "contain 0%" = scene top at the top of the screen, "contain 100%" = scene bottom at the bottom = p 0 … 1.
-   --------------------------------------------------------------------------------------------------------------- */
-@supports (animation-timeline: --a) {
-  @media (prefers-reduced-motion: no-preference) {
-    .scene { view-timeline: --intro block; }
-    .intro .figure, .intro .cast-track, .intro .cast-in, .intro .molten, .intro .glow,
-    .intro .wordmark, .scroll-hint, .line {
-      animation-timing-function: linear; animation-fill-mode: both; animation-duration: auto;
-      animation-timeline: --intro;
-    }
-    .intro .figure { animation-name: sd-figure; animation-range: contain 0% contain 100%; }
-    .intro .cast-track { animation-name: sd-track; animation-range: contain 4% contain 42.5%; }
-    .intro .cast-in { animation-name: sd-in; animation-range: contain 4% contain 42.5%; }
-    .intro .molten { animation-name: sd-molten; animation-range: contain 4% contain 42.5%; }
-    .intro .glow { animation-name: sd-glow; animation-range: contain 0% contain 100%; }
-    .intro .wordmark { animation-name: sd-out; animation-range: contain 1.5% contain 10%; }
-    .scroll-hint { animation-name: sd-out; animation-range: contain 0% contain 4%; }
-    .line { animation-name: sd-line; }
-    .line:nth-child(1) { animation-range: contain 26% contain 86%; }
-    .line:nth-child(2) { animation-range: contain 40% contain 86%; }
-    .line:nth-child(3) { animation-range: contain 54% contain 86%; }
-    /* The sketch keeps its time-based drawing on load and gets the scroll fade as a second animation. */
-    .intro .sketch, .intro-on .intro .sketch {
-      animation: draw 2.6s cubic-bezier(.45, 0, .2, 1) .2s both, sd-sketch linear both;
-      animation-timeline: auto, --intro; animation-range: normal, contain 4% contain 42.5%;
-    }
-
-    @keyframes sd-figure {
-      0%, 10% { transform: translate(0, -6vh) scale(1); opacity: 1; }
-      30%, 88% { transform: translate(21vw, 0) scale(1.06); opacity: 1; }
-      100% { transform: translate(21vw, 0) scale(.98); opacity: 0; }
-    }
-    @keyframes sd-track { from { transform: translate3d(0, 100%, 0); } to { transform: translate3d(0, 0, 0); } }
-    @keyframes sd-in { from { transform: translate3d(0, -100%, 0); } to { transform: translate3d(0, 0, 0); } }
-    @keyframes sd-molten { 0% { opacity: 0; } 8%, 92% { opacity: 1; } 100% { opacity: 0; } }
-    @keyframes sd-glow {
-      0% { transform: translate3d(48%, -6%, 0); opacity: 0; }
-      42% { opacity: 1; }
-      100% { transform: translate3d(18%, 104%, 0); opacity: 1; }
-    }
-    @keyframes sd-sketch { from { opacity: .9; } to { opacity: .4; } }
-    @keyframes sd-out { from { opacity: 1; } to { opacity: 0; } }
-    @keyframes sd-line {
-      0% { opacity: 0; transform: translateY(28px); }
-      20%, 80% { opacity: 1; transform: none; }
-      100% { opacity: 0; transform: none; }
-    }
-
-    @media (max-width: 760px) {
-      .intro .figure { animation-name: sd-figure-sm; }
-      @keyframes sd-figure-sm {
-        0%, 10% { transform: translateY(-8vh) scale(1); opacity: 1; }
-        30%, 88% { transform: translateY(-18vh) scale(1); opacity: 1; }
-        100% { transform: translateY(-18vh) scale(.92); opacity: 0; }
-      }
-    }
-  }
 }

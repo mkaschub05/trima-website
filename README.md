@@ -14,6 +14,7 @@ All pages are generated from one template: edit the texts in `tools/build.py`, t
 | `assets/` | CSS and logos. Emblem, wordmark and icons are cut from Maddox's Justitia logo (Lanczos scaling + unsharp mask) |
 | `tools/build.py` | Page generator (EN + DE texts) |
 | `assets/email/` | Images for the e-mail signature (PNG, referenced by URL – keep them) |
+| `tools/bake.swift` | Bakes soft edges / bronze colour into the intro images (no CSS masks at runtime) |
 | `tools/socialcard.swift` | Share image `assets/img/trima-share.jpg` (1200×630) for WhatsApp/LinkedIn/X |
 | `tools/sharpen.swift` | Crops/sharpens logo parts with macOS Core Image (`swiftc -O tools/sharpen.swift -o sharpen`) |
 | `assets/css/intro.css`, `assets/js/intro.js` | Scroll intro on both home pages: engraving drawn on load, bronze cast on scroll; line art from `tools/lineart.swift` |
