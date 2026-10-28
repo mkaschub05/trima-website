@@ -158,36 +158,41 @@ main > .scene:first-child { margin-top: -72px; }
   100% { opacity: 0; transform: none; }
 }
 
-/* ---------- Mode 2: touch devices, plays by itself, page scrolls normally ---------- */
+/* ---------- Mode 2: touch devices – pinned, but stepped instead of scrubbed ----------
+   The stage stays pinned while the scene scrolls past (native sticky, smooth). intro.js only switches classes
+   s1…s5 on the scene when a threshold is crossed; each step then plays as a short time-based transition on the GPU.
+   Scrolling back removes the class and the step plays backwards. Nothing is computed per frame. */
 @media (hover: none) {
-  .scene { height: auto; }
-  .scene .stage { position: relative; }
+  .scene { height: 260vh; }
   .lines { left: 20px; right: 20px; top: auto; bottom: 10vh; transform: none; }
-  .line { font-size: 34px; opacity: 0; }
-  .intro .figure { height: min(46vh, 84vw); transform: translateY(-17vh); }
-  .intro .sketch { opacity: .9; }
-  .intro .cast-track { transform: translate3d(0, 100%, 0); }
-  .intro .cast-in { transform: translate3d(0, -100%, 0); }
-  .intro .molten, .intro .glow { opacity: 0; }
-  .scroll-hint { opacity: 0; }
+  .line { font-size: 34px; opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .9s cubic-bezier(.2, .7, .2, 1); }
+  .intro .figure {
+    height: min(46vh, 84vw); transform: translateY(-6vh);
+    transition: transform 1.2s cubic-bezier(.3, .7, .2, 1), opacity .9s ease;
+  }
+  .intro .sketch { opacity: .9; transition: opacity 1.6s ease; }
+  .intro .cast-track { transform: translate3d(0, 100%, 0); transition: transform 2s cubic-bezier(.5, 0, .25, 1); }
+  .intro .cast-in { transform: translate3d(0, -100%, 0); transition: transform 2s cubic-bezier(.5, 0, .25, 1); }
+  .intro .molten { opacity: 0; transition: opacity .3s ease; }
+  .intro .glow { opacity: 0; transition: opacity 1s ease; animation: t-glow 7s ease-in-out infinite alternate both; }
+  .intro .wordmark { transition: clip-path 1.8s cubic-bezier(.6, 0, .2, 1) 1.6s, opacity .6s ease; }
+  .scroll-hint { transition: opacity .5s ease; }
 
-  .intro-on .intro .sketch { animation: draw 2.2s cubic-bezier(.45, 0, .2, 1) .2s both, t-sketch 1.6s ease 2.4s both; }
-  .intro-on .intro .cast-track { animation: sd-track 2.4s cubic-bezier(.5, 0, .25, 1) 2.2s both; }
-  .intro-on .intro .cast-in { animation: sd-in 2.4s cubic-bezier(.5, 0, .25, 1) 2.2s both; }
-  .intro-on .intro .molten { animation: sd-molten 2.4s linear 2.2s both; }
-  .intro-on .intro .glow { animation: t-glow-in 1s ease 4.4s both, t-glow 7s ease-in-out 4.4s infinite alternate both; }
-  .intro-on .intro .wordmark { animation: sd-out .7s ease 4.4s both; }
-  .intro-on .line { animation: t-line .9s cubic-bezier(.2, .7, .2, 1) both; }
-  .intro-on .line:nth-child(1) { animation-delay: 4.8s; }
-  .intro-on .line:nth-child(2) { animation-delay: 5.3s; }
-  .intro-on .line:nth-child(3) { animation-delay: 5.8s; }
-  .intro-on .scroll-hint { animation: t-show .8s ease 6.6s both; }
+  /* s1: bronze pours in */
+  .s1 .sketch { opacity: .35; }
+  .s1 .cast-track, .s1 .cast-in { transform: translate3d(0, 0, 0); }
+  .s1 .molten { animation: sd-molten 2s linear both; }
+  .s1 .glow { opacity: 1; transition-delay: 1.6s; }
+  .s1 .wordmark { opacity: 0; transition: clip-path 0s, opacity .6s ease; }
+  .s1 .scroll-hint { opacity: 0; }
+  /* s2–s4: figure moves up, lines appear one by one */
+  .s2 .figure { transform: translateY(-17vh); }
+  .s2 .line:nth-child(1), .s3 .line:nth-child(2), .s4 .line:nth-child(3) { opacity: 1; transform: none; }
+  /* s5: the scene ends */
+  .s5 .figure { opacity: 0; }
+  .s5 .line { opacity: 0; }
 
-  @keyframes t-sketch { from { opacity: .9; } to { opacity: .35; } }
-  @keyframes t-glow-in { from { opacity: 0; } to { opacity: 1; } }
   @keyframes t-glow { from { transform: translate3d(48%, -4%, 0); } to { transform: translate3d(14%, 70%, 0); } }
-  @keyframes t-line { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
-  @keyframes t-show { from { opacity: 0; } to { opacity: 1; } }
 }
 
 /* Phones (any input): lines at the bottom. */
@@ -196,7 +201,7 @@ main > .scene:first-child { margin-top: -72px; }
   .lines { left: 20px; right: 20px; top: auto; bottom: 12vh; transform: none; }
   .line { font-size: 34px; }
 }
-@media (max-width: 760px) and (hover: none) { .scene { height: auto; } .lines { bottom: 10vh; } }
+@media (max-width: 760px) and (hover: none) { .scene { height: 260vh; } .lines { bottom: 10vh; } }
 
 /* Reduced motion: no pinned scene, finished bronze, no drawing. */
 .scene.static { height: auto; }

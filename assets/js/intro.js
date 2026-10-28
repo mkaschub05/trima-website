@@ -1,5 +1,6 @@
-// Scroll scenes for the intro previews. Each [data-scene] is taller than the screen and holds a sticky
-// stage; while it scrolls past, --p runs from 0 to 1 and the CSS moves everything from that value.
+// Scroll scene for the intro. Each [data-scene] is taller than the screen and holds a sticky stage.
+// PC: --p runs from 0 to 1 while the scene scrolls past (or CSS scroll-driven animations do it themselves).
+// Touch: only the step classes s1…s5 are switched at thresholds; the steps animate time-based in CSS.
 // No scroll hijacking: the page scrolls normally, the stage only reads the position.
 (function () {
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -12,8 +13,9 @@
   // With CSS scroll-driven animations the browser moves everything itself (see intro.css); then JS only
   // hides the header while the scene runs and does not touch --p.
   var cssDriven = window.CSS && CSS.supports("animation-timeline: --a");
-  // Touch devices: the intro plays by itself (time-based CSS, see intro.css); JS never touches --p there.
+  // Touch devices: stepped instead of scrubbed (see intro.css); JS never touches --p there.
   var touch = window.matchMedia("(hover: none)").matches;
+  var STEPS = [0.02, 0.22, 0.36, 0.5, 0.9];   // p at which s1 … s5 switch on
   var ticking = false;
   function update() {
     var vh = window.innerHeight;
@@ -22,8 +24,16 @@
       var total = s.offsetHeight - vh;
       var p = total > 0 ? Math.min(Math.max(-r.top / total, 0), 1) : 0;
       if (!cssDriven && !touch) s.style.setProperty("--p", p.toFixed(4));
-      // Header hidden while the scene fills the screen: pinned scene → until 90 %; unpinned (touch) → until half of it has scrolled away.
-      var inIntro = total > 0 ? p < 0.9 : r.bottom > vh * 0.5;
+      if (touch) {
+        var step = 0;
+        while (step < STEPS.length && p >= STEPS[step]) step++;
+        if (s._step !== step) {
+          for (var i = 1; i <= STEPS.length; i++) s.classList.toggle("s" + i, i <= step);
+          s._step = step;
+        }
+      }
+      // Header hidden while the scene fills the screen.
+      var inIntro = p < 0.9;
       if (s === scenes[0] && document.documentElement.classList.contains("in-intro") !== inIntro) {
         document.documentElement.classList.toggle("in-intro", inIntro);
       }
