@@ -40,7 +40,7 @@ T = {
                          "Publishing across several accounts, with clear reporting",
                          "Translation and dubbing",
                          "AI videos and animations"],
-            "button": "Visit virentio.app",
+            "button": "Visit VIRENTIO",
         },
         "companies": [
             ("virentio", "VIRENTIO", "Social media agency", "", "", 49),
@@ -98,7 +98,7 @@ T = {
                          "Veröffentlichung über mehrere Accounts, mit klarem Reporting",
                          "Übersetzung und Synchronisation",
                          "KI-Videos und Animationen"],
-            "button": "Zu virentio.app",
+            "button": "Zu VIRENTIO",
         },
         "companies": [
             ("virentio", "VIRENTIO", "Social-Media-Agentur", "", "", 49),
