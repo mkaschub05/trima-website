@@ -13,7 +13,13 @@
   <meta property="og:title" content="Trima">
   <meta property="og:description" content="Dachgesellschaft von VIRENTIO, LOCENTIO und EXEMPTIO.">
   <meta property="og:url" content="https://trima.ae/de/">
-  <meta property="og:image" content="https://trima.ae/assets/img/trima-logo.jpg">
+  <meta property="og:site_name" content="Trima">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:image" content="https://trima.ae/assets/img/trima-share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Justitia mit Waage – das Trima-Zeichen">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#080605">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
@@ -22,6 +28,8 @@
   <link rel="stylesheet" href="/assets/css/site.css">
   <script>document.documentElement.classList.add("js")</script>
   <script src="/assets/js/site.js" defer></script>
+  <link rel="preload" as="image" href="/assets/img/justitia-lines.webp" type="image/webp">
+  <link rel="preload" as="image" href="/assets/img/justitia-hi.webp" imagesrcset="/assets/img/justitia-640.webp 640w, /assets/img/justitia-hi.webp 1065w" imagesizes="(max-width: 760px) 92vw, 64vh" fetchpriority="high">
   <link rel="stylesheet" href="/assets/css/intro.css">
   <script src="/assets/js/intro.js" defer></script>
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "Trima", "url": "https://trima.ae/", "logo": "https://trima.ae/assets/img/trima-logo.jpg", "email": "contact@trima.ae", "description": "Dachgesellschaft von VIRENTIO, LOCENTIO und EXEMPTIO."}</script>
@@ -47,7 +55,7 @@
         <div class="figure">
           <span class="sketch" aria-hidden="true"></span>
           <div class="cast-track">
-            <div class="cast"><div class="cast-in"><img src="/assets/img/justitia-hi.webp" alt="Justitia mit Waage – das Trima-Zeichen" width="1065" height="1035"></div></div>
+            <div class="cast"><div class="cast-in"><img src="/assets/img/justitia-hi.webp" srcset="/assets/img/justitia-640.webp 640w, /assets/img/justitia-hi.webp 1065w" sizes="(max-width: 760px) 92vw, 64vh" alt="Justitia mit Waage – das Trima-Zeichen" width="1065" height="1035" fetchpriority="high"></div></div>
             <span class="molten" aria-hidden="true"></span>
           </div>
           <span class="glow" aria-hidden="true"></span>
@@ -76,7 +84,7 @@
           <div class="frame">
             <picture>
               <source srcset="/assets/img/justitia.webp" type="image/webp">
-              <img src="/assets/img/justitia.jpg" alt="Justitia mit Waage – das Trima-Zeichen" width="800" height="778">
+              <img src="/assets/img/justitia.jpg" alt="Justitia mit Waage – das Trima-Zeichen" width="800" height="778" loading="lazy" decoding="async">
             </picture>
             <span class="light" aria-hidden="true"></span>
           </div>
@@ -100,7 +108,7 @@
         <div class="companies">
           <article class="company virentio featured" data-reveal data-spot>
             <div class="featured-main">
-              <div class="top"><img src="/assets/img/virentio.png" alt="" width="52" height="46"><span class="num">01</span></div>
+              <div class="top"><img src="/assets/img/virentio.webp" alt="" loading="lazy" width="52" height="46"><span class="num">01</span></div>
               <h3>VIRENTIO</h3>
               <p class="field">Social-Media-Agentur</p>
               <p class="desc">VIRENTIO macht aus Streams, Podcasts und Videos Inhalte, die ankommen – für Creator, Agenturen und Unternehmen, mit fester Ansprechperson vom ersten Clip an.</p>
@@ -112,14 +120,14 @@
             </div>
           </article>
           <article class="company locentio" data-reveal data-spot style="--d: 0.12s">
-            <div class="top"><img src="/assets/img/locentio.png" alt="" width="44" height="46"><span class="num">02</span></div>
+            <div class="top"><img src="/assets/img/locentio.webp" alt="" loading="lazy" width="44" height="46"><span class="num">02</span></div>
             <h3>LOCENTIO</h3>
             <p class="field">Daten &amp; Technologie</p>
             <p class="desc">LOCENTIO entwickelt datengestützte Software. Mehr dazu zum Start.</p>
             <p class="status">In Entwicklung</p>
           </article>
           <article class="company exemptio" data-reveal data-spot style="--d: 0.24s">
-            <div class="top"><img src="/assets/img/exemptio.png" alt="" width="44" height="39"><span class="num">03</span></div>
+            <div class="top"><img src="/assets/img/exemptio.webp" alt="" loading="lazy" width="44" height="39"><span class="num">03</span></div>
             <h3>EXEMPTIO</h3>
             <p class="field">Finanzen &amp; Steuern für KMU</p>
             <p class="desc">Ein Finanz- und Betriebssystem für kleine und mittlere Unternehmen: Steuern, Lohn, Kosten und Liquidität – korrekt, belegt und in Zusammenarbeit mit Steuerberatern.</p>

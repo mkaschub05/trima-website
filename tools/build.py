@@ -135,8 +135,14 @@ def head(t, lang, title, canonical, description=None, index=True, extra=""):
   <meta property="og:title" content="Trima">
   <meta property="og:description" content="{og}">
   <meta property="og:url" content="https://trima.ae{canonical}">
-  <meta property="og:image" content="https://trima.ae/assets/img/trima-logo.jpg">""".format(
-            og=t["og_description"], canonical=canonical)
+  <meta property="og:site_name" content="Trima">
+  <meta property="og:locale" content="{locale}">
+  <meta property="og:image" content="https://trima.ae/assets/img/trima-share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{alt}">
+  <meta name="twitter:card" content="summary_large_image">""".format(
+            og=t["og_description"], canonical=canonical, locale="de_DE" if lang == "de" else "en_US", alt=t["art_alt"])
     desc = f'\n  <meta name="description" content="{description}">' if description else ""
     robots = "" if index else '\n  <meta name="robots" content="noindex">'
     return f"""<!doctype html>
@@ -229,7 +235,7 @@ def home(lang, intro="", extra_head="", index=True, canonical=None):
             items = "".join(f"<li>{x}</li>" for x in v["services"])
             cards.append(f"""          <article class="company virentio featured" data-reveal data-spot>
             <div class="featured-main">
-              <div class="top"><img src="/assets/img/virentio.png" alt="" width="52" height="{round(52 * h / 56)}"><span class="num">0{i}</span></div>
+              <div class="top"><img src="/assets/img/virentio.webp" alt="" loading="lazy" width="52" height="{round(52 * h / 56)}"><span class="num">0{i}</span></div>
               <h3>{name}</h3>
               <p class="field">{field}</p>
               <p class="desc">{v['lead']}</p>
@@ -242,7 +248,7 @@ def home(lang, intro="", extra_head="", index=True, canonical=None):
           </article>""")
             continue
         cards.append(f"""          <article class="company {key}" data-reveal data-spot style="--d: {(i - 1) * .12:.2f}s">
-            <div class="top"><img src="/assets/img/{key}.png" alt="" width="44" height="{round(44 * h / 56)}"><span class="num">0{i}</span></div>
+            <div class="top"><img src="/assets/img/{key}.webp" alt="" loading="lazy" width="44" height="{round(44 * h / 56)}"><span class="num">0{i}</span></div>
             <h3>{name}</h3>
             <p class="field">{field}</p>
             <p class="desc">{desc}</p>
@@ -268,7 +274,7 @@ def home(lang, intro="", extra_head="", index=True, canonical=None):
           <div class="frame">
             <picture>
               <source srcset="/assets/img/justitia.webp" type="image/webp">
-              <img src="/assets/img/justitia.jpg" alt="{t['art_alt']}" width="800" height="778">
+              <img src="/assets/img/justitia.jpg" alt="{t['art_alt']}" width="800" height="778" loading="lazy" decoding="async">
             </picture>
             <span class="light" aria-hidden="true"></span>
           </div>
@@ -344,7 +350,7 @@ def intro_html(lang):
         <div class="figure">
           <span class="sketch" aria-hidden="true"></span>
           <div class="cast-track">
-            <div class="cast"><div class="cast-in"><img src="/assets/img/justitia-hi.webp" alt="{t['art_alt']}" width="1065" height="1035"></div></div>
+            <div class="cast"><div class="cast-in"><img src="/assets/img/justitia-hi.webp" srcset="/assets/img/justitia-640.webp 640w, /assets/img/justitia-hi.webp 1065w" sizes="(max-width: 760px) 92vw, 64vh" alt="{t['art_alt']}" width="1065" height="1035" fetchpriority="high"></div></div>
             <span class="molten" aria-hidden="true"></span>
           </div>
           <span class="glow" aria-hidden="true"></span>
@@ -359,6 +365,8 @@ def intro_html(lang):
 
 
 INTRO_HEAD = """
+  <link rel="preload" as="image" href="/assets/img/justitia-lines.webp" type="image/webp">
+  <link rel="preload" as="image" href="/assets/img/justitia-hi.webp" imagesrcset="/assets/img/justitia-640.webp 640w, /assets/img/justitia-hi.webp 1065w" imagesizes="(max-width: 760px) 92vw, 64vh" fetchpriority="high">
   <link rel="stylesheet" href="/assets/css/intro.css">
   <script src="/assets/js/intro.js" defer></script>"""
 

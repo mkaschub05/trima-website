@@ -9,7 +9,7 @@
   --line-strong: #3a2f26;
   --text: #f1ebe4;
   --muted: #a89b8e;
-  --faint: #7a6e63;
+  --faint: #8f8276;  /* ≥ 4.5:1 on the background */
   --bronze: #d29a6a;
   --bronze-light: #f0c49b;
   --virentio: #8b5cff;

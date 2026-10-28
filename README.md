@@ -13,6 +13,7 @@ All pages are generated from one template: edit the texts in `tools/build.py`, t
 | `legal/`, `de/impressum/` | Legal notice – placeholder until the IFZA licence is issued |
 | `assets/` | CSS and logos. Emblem, wordmark and icons are cut from Maddox's Justitia logo (Lanczos scaling + unsharp mask) |
 | `tools/build.py` | Page generator (EN + DE texts) |
+| `tools/socialcard.swift` | Share image `assets/img/trima-share.jpg` (1200×630) for WhatsApp/LinkedIn/X |
 | `tools/sharpen.swift` | Crops/sharpens logo parts with macOS Core Image (`swiftc -O tools/sharpen.swift -o sharpen`) |
 | `assets/css/intro.css`, `assets/js/intro.js` | Scroll intro on both home pages: engraving drawn on load, bronze cast on scroll; line art from `tools/lineart.swift` |
 | `assets/js/site.js` | Motion: word reveal, scroll reveal, light on the Justitia bronze (pointer/scroll), card light, header; off with reduced motion |
